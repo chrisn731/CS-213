@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+
+<GridPane
+	xmlns="http://javafx.com/javafx/8"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="songlib.view.SongLibController"
+	vgap="10" hgap="10" gridLinesVisible="false">
+	
+	<ListView fx:id="listView" prefWidth="290" prefHeight="400"/>
+	<HBox GridPane.rowIndex="1" spacing="10" alignment="CENTER"> 
+		<Button fx:id="add" prefWidth="90" text="Add"
+			onAction="#buttonPress" />
+		<Button fx:id="edit" prefWidth="90" text="Edit" 
+			onAction="#buttonPress" />
+		<Button fx:id="delete" prefWidth="90" text="Delete" 
+			onAction="#buttonPress" />
+	</HBox>
+	<VBox GridPane.columnIndex="1" spacing="0" >
+		<Button fx:id="details" text="Details" prefWidth="90"
+			onAction="#buttonPress" />
+	</VBox>
+	<VBox GridPane.rowIndex="2" spacing="2" >
+		<TextField promptText="Song name"/>
+		<TextField promptText="Artist name"/>
+		<HBox spacing="2">
+			<TextField promptText="Album name"/>
+			<TextField promptText="Year"/>
+		</HBox>
+	</VBox>
+	
+	<padding>
+		<Insets top="10" right="10" bottom="10" left="10"/>
+	</padding>
+</GridPane>

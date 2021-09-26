@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Michael Nelli
+	Chris Naporlee
+-->
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+
+<GridPane
+	xmlns="http://javafx.com/javafx/8"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="songlib.view.SongLibController"
+	vgap="10" hgap="10" gridLinesVisible="false">
+	<ListView fx:id="listView" prefWidth="390" prefHeight="250"/>
+	<!--BUTTONS-->
+	<AnchorPane GridPane.rowIndex="1"> 
+		<Button fx:id="add" text="Add" prefWidth="90" AnchorPane.LeftAnchor="0.0" 
+			onAction="#buttonPress" />
+		<Button fx:id="edit" text="Edit" prefWidth="90" AnchorPane.LeftAnchor="100.0" disable="false"
+			onAction="#buttonPress" />
+		<Button fx:id="details" text="Details" prefWidth="90" AnchorPane.LeftAnchor="200.0" disable="false"
+			onAction="#buttonPress" />
+		<Button fx:id="delete" text="Delete" prefWidth="90" AnchorPane.RightAnchor="0.0" disable="false"
+			onAction="#buttonPress" />
+	</AnchorPane>
+	<!--INPUT FIELDS-->
+	<VBox fx:id="inputs" GridPane.rowIndex="2" spacing="2" visible="false">
+		<Text fx:id="headerText" text="Enter a new song:"/>
+		<TextField fx:id="songNameField" promptText="Song name"/>
+		<TextField fx:id="artistNameField" promptText="Artist name"/>
+		<HBox spacing="2">
+			<TextField fx:id="albumNameField" promptText="Album name" prefWidth="194"/>
+			<TextField fx:id="yearField" promptText="Year" prefWidth="194"/>
+		</HBox>
+		<AnchorPane> 
+			<Button fx:id="confirm" text="Confirm" prefWidth="90" AnchorPane.LeftAnchor="0.0"
+				onAction="#buttonPress" />
+			<Button fx:id="cancel" text="Cancel" prefWidth="90" AnchorPane.RightAnchor="0.0"
+				onAction="#buttonPress" />
+		</AnchorPane>
+	</VBox>
+	<!--DETAILS-->
+	<VBox fx:id="info" GridPane.rowIndex="2" spacing="2" visible="false">
+		<HBox>
+			<Text text="Song: "/>
+			<Text fx:id="songNameText" text="blahblah"/>
+		</HBox>
+		<HBox>
+			<Text text="Artist: "/>
+			<Text fx:id="artistNameText" text="blahblah"/>
+		</HBox>
+		<HBox>
+			<Text text="Album: "/>
+			<Text fx:id="albumNameText" text="blahblah"/>
+		</HBox>
+		<HBox>
+			<Text text="Year: "/>
+			<Text fx:id="yearText" text="blahblah"/>
+		</HBox>
+	</VBox>
+	
+	<padding>
+		<Insets top="10" right="10" bottom="10" left="10"/>
+	</padding>
+</GridPane>
