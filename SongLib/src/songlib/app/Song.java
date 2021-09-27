@@ -30,7 +30,7 @@ public class Song {
 	
 	public void setYear(String year) {
 		if (year.equals("")) {
-			year = "";
+			this.year = "";
 			return;
 		}
 		

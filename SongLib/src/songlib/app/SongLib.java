@@ -23,6 +23,7 @@ public class SongLib extends Application {
 		primaryStage.setTitle("Song Library");
 		primaryStage.setResizable(false);
 		primaryStage.show();
+
 		
 		SongLibController sbc = loader.getController();
 		sbc.init();
