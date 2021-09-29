@@ -16,16 +16,22 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import songlib.app.Song;
 
 enum Op {
 	ADDING, EDITING;
 }
+
+//TODO: disable listview when editing
 
 public class SongLibController {
 	@FXML Button add;
@@ -51,10 +57,28 @@ public class SongLibController {
 	
 	private ObservableList<String> obsList;
 	private HashMap<String, Song> songs = new HashMap<String, Song>();
+	private Song selectedEdit;
+	private Op action;
 	private long numEntries;
-	private Op o;
+
+	private Stage primaryStage;
 	
 	private static final String SONG_FILE_PATH = "./songlib.txt";
+	
+	public void init(Stage mainStage) {
+		primaryStage = mainStage; 
+		obsList = FXCollections.observableArrayList(loadSongFile());
+		listView.setItems(obsList);
+		obsList.sort(null);
+		if (numEntries > 0) {
+			listView.requestFocus();
+			listView.getSelectionModel().select(0);	
+		} else {
+			add.requestFocus();
+			disableButtons(true);
+		}
+	}
+	
 	/*
 	 * Load the song library history into memory.
 	 * If the file does not exist, create it.
@@ -105,40 +129,25 @@ public class SongLibController {
 		return songList;
 	}
 	
-	public void init() {
-		//Have to set this up to read from a file of songs
-		obsList = FXCollections.observableArrayList(loadSongFile());
-		listView.setItems(obsList);
-		if (numEntries > 0) {
-			listView.requestFocus();
-			listView.getSelectionModel().select(0);	
-		} else {
-			add.requestFocus();
-		}
-	}
-	
-	public void buttonPress(ActionEvent e) {
+	@FXML
+	private void buttonPress(ActionEvent e) {
 		Button b = (Button) e.getSource();
 		if (b == add) {
-			o = Op.ADDING;
-			//addSong();
-			inputs.setVisible(true);
-			info.setVisible(false);
-			songNameField.requestFocus();
-			headerText.setText("Enter a new song:");
+			showAddDialogue();
+			action = Op.ADDING;
 		} else if (b == edit) {
-			o = Op.EDITING;
-			//editSong();
-			inputs.setVisible(true);
-			info.setVisible(false);
-			headerText.setText("Edit song:");
-		} else if (b == details) {
-			getDetails();
+			showEditDialogue();
+			action = Op.EDITING;
 		} else if (b == confirm) {
-			addSong();
+			updateSongs();
 			updateSongFile();
 		} else if (b == cancel){
+			clearInputs();
 			inputs.setVisible(false);
+			disableAllButtons(false);
+			listView.setDisable(false);
+		} else if (b == details) {
+			getDetails();
 		} else {
 			deleteSong();
 			updateSongFile();
@@ -173,55 +182,66 @@ public class SongLibController {
 		}
 	}
 	
-	public void addSong() {
-		//inputs.setVisible(true);
-		//info.setVisible(false);
-		
+	private void updateSongs() {
 		String song = songNameField.getText();
 		String artist = artistNameField.getText();
-		String year = yearField.getText().replaceAll(" ", "");
+		String album = albumNameField.getText();
+		String year = yearField.getText().replaceAll("\\s", "");
 		
-		if (song.equals("") || artist.equals("")) {
-			//TODO: POPUP
-			System.out.println("Must enter a name and artist bruh");
+		if (!isValidInput(song, artist, album, year)) {
 			return;
 		}
 		
-		if (!year.equals("")) {
-			if (!isPositiveInteger(year)) {
-				//TODO: POPUP
-				System.out.println("Enter a valid positive integer");
-				return;
-			}
-		}
-		
-		//String key = (song + artist).toLowerCase().replaceAll(" ", "");
 		String key = formatEntry(song + artist);
-		if (songs.containsKey(key)) {
-			//TODO: POPUP
-			System.out.println("we already added this brah");
-			songNameField.requestFocus();
-		} else {
-			Song s = new Song(song, artist, albumNameField.getText(), year);	
-			songs.put(key, s);
-			obsList.add(song + " | " + artist);
-			obsList.sort(null);
-			songNameField.clear();
-			artistNameField.clear();
-			albumNameField.clear();
-			yearField.clear();
-			numEntries++;
+		switch (action) {
+			case EDITING:
+				Song s = songs.get(key);
+				if (selectedEdit == s) {
+					selectedEdit.setAlbum(album);
+					selectedEdit.setYear(year);
+				} else if (s != null) {
+					showPopup("Duplicate Song",
+							  "",
+							  "This song already exists in the library.");
+				} else {
+					int index = listView.getSelectionModel().getSelectedIndex();
+					songs.remove(formatSearch(obsList.get(index)));
+					obsList.remove(index);
+					numEntries--;
+					addSong(key, new Song(song, artist, album, year));
+				}
+				getDetails();
+				break;
+			case ADDING:
+				if (songs.containsKey(key)) {
+					showPopup("Duplicate Song",
+							  "",
+							  "This song already exists in the library.");
+					songNameField.requestFocus();
+				} else {
+					addSong(key, new Song(song, artist, album, year));
+					getDetails();
+				}
+				break;
 		}
-		
-		//TODO: Focus on newly added item:
+		disableAllButtons(false);
+		listView.setDisable(false);
 	}
 	
-	public void editSong() {
-		inputs.setVisible(true);
-		info.setVisible(false);
+	private void addSong(String key, Song song) {
+		String name = song.getName() + " | " + song.getArtist();
+		songs.put(key, song);
+		obsList.add(name);
+		obsList.sort(null);
+		clearInputs();
+		if (numEntries == 0) {
+			disableButtons(false);
+		}
+		numEntries++;
+		listView.getSelectionModel().select(obsList.indexOf(name));
 	}
-	
-	public void getDetails() {
+
+	private void getDetails() {
 		info.setVisible(true);
 		inputs.setVisible(false);
 		
@@ -235,25 +255,121 @@ public class SongLibController {
 		}
 	}
 	
-	public void deleteSong() {
-		//TODO: Have to add a warning before going through with it
+	private void deleteSong() {
 		int index = listView.getSelectionModel().getSelectedIndex();
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.initOwner(primaryStage);
+		alert.setTitle("Delete Song");
+		alert.setHeaderText("");
+		String context = "Are you sure you want to delete \""
+					  	  + obsList.get(index)
+					  	  + "\" from the library?";
+		alert.setContentText(context);
+		alert.showAndWait();
+		
+		if (alert.getResult().equals(ButtonType.CANCEL)) {
+			return;
+		}
 		
 		if (index >= 0) {
 			songs.remove(formatSearch(obsList.get(index)));
 			obsList.remove(index);
-			numEntries--;
+			if (numEntries > index) {
+				listView.getSelectionModel().select(index);	
+			}
+			numEntries--;		
+			if (numEntries != 0) {
+				getDetails();
+			} else {
+				disableButtons(true);
+				info.setVisible(false);
+				add.requestFocus();
+			}
 		}
+	}
+	
+	private boolean isValidInput(String song, String artist, String album, String year) {	
+		if (song.equals("") || artist.equals("")) {
+			showPopup("Missing Fields", 
+					  "",
+					  "Please enter in a song name and artist. Album and year are optional.");
+			return false;
+		}
+		if (song.contains("|") || artist.contains("|") || album.contains("|")) {
+			showPopup("Illegal Character",
+					  "",
+					  "Vertical bar ( | ) not permitted.");
+			return false;
+		}
+		if (!year.equals("")) {
+			if (!isPositiveInteger(year)) {
+				showPopup("Invalid Year",
+						  "",
+						  "Please enter in a positive integer for the year.");
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private void showAddDialogue() {
+		clearInputs();
+		inputs.setVisible(true);
+		info.setVisible(false);
+		disableAllButtons(true);
+		songNameField.requestFocus();
+		headerText.setText("Enter a new song:");
+	}
+	
+	private void showEditDialogue() {
+		inputs.setVisible(true);
+		info.setVisible(false);
+		disableAllButtons(true);
+		headerText.setText("Edit song:");
+		
+		int index = listView.getSelectionModel().getSelectedIndex();
+		Song s = songs.get(formatSearch(obsList.get(index)));
+		selectedEdit = s;
+		songNameField.setText(s.getName());
+		artistNameField.setText(s.getArtist());
+		albumNameField.setText(s.getAlbum());
+		yearField.setText(s.getYear());
+		listView.setDisable(true);
+	}
+	
+	private void showPopup(String title, String header, String context) {
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.initOwner(primaryStage);
+		alert.setTitle(title);
+		alert.setHeaderText(header);
+		alert.setContentText(context);
+		alert.showAndWait();
+	}
+	
+	private void clearInputs() {
+		songNameField.clear();
+		artistNameField.clear();
+		albumNameField.clear();
+		yearField.clear();
+	}
+	
+	private void disableAllButtons(boolean b) {
+		add.setDisable(b);
+		delete.setDisable(b);
+		details.setDisable(b);
+		edit.setDisable(b);
+	}
+	
+	private void disableButtons(boolean b) {
+		delete.setDisable(b);
+		details.setDisable(b);
+		edit.setDisable(b);
 	}
 	
 	private String formatEntry(String s) {
 		return s.toLowerCase().replaceAll("\\s", "");
 	}
 	
-	/*
-	 * TODO: Probably will have to change this separator, because a
-	 * song could have the word "by" in it.
-	 */
 	private String formatSearch(String s) {
 		return s.toLowerCase().replaceAll("[\\s+\\|\\s+]", "");
 	}
@@ -263,6 +379,9 @@ public class SongLibController {
 			if (!Character.isDigit(s.charAt(i))) {
 				return false;
 			}
+		}
+		if (Integer.parseInt(s) < 0) {
+			return false;
 		}
 		return true;
 	}

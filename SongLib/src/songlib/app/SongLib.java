@@ -25,8 +25,8 @@ public class SongLib extends Application {
 		primaryStage.show();
 
 		
-		SongLibController sbc = loader.getController();
-		sbc.init();
+		SongLibController controller = loader.getController();
+		controller.init(primaryStage);
 	}
 
 	public static void main(String[] args) {
