@@ -37,12 +37,11 @@ public class SongLibController {
 	@FXML Button add;
 	@FXML Button edit;
 	@FXML Button delete;
-	@FXML Button details;
 	@FXML Button confirm;
 	@FXML Button cancel;
 	@FXML ListView<String> listView;
 
-	@FXML VBox inputs;
+	@FXML VBox inputFields;
 	@FXML TextField songNameField;
 	@FXML TextField artistNameField;
 	@FXML TextField albumNameField;
@@ -64,7 +63,7 @@ public class SongLibController {
 	private Stage primaryStage;
 
 	private static final String SONG_FILE_PATH = "./songlib.txt";
-	private static final boolean DETAILS_ON_CLICK = false;
+	private static final boolean DETAILS_ON_CLICK = true;
 
 	public void init(Stage mainStage) {
 		primaryStage = mainStage;
@@ -89,12 +88,11 @@ public class SongLibController {
 			listView.getSelectionModel().select(0);
 		} else {
 			add.requestFocus();
-			disableButtons(true);
+			disableButtons(false, true, true);
 		}
 	}
 
 	private void songListClickHandler(Stage mainStage) {
-		// TODO Auto-generated method stub
 		getDetails();
 	}
 
@@ -178,12 +176,7 @@ public class SongLibController {
 			updateSongs();
 			updateSongFile();
 		} else if (b == cancel){
-			clearInputs();
-			inputs.setVisible(false);
-			disableAllButtons(false);
-			listView.setDisable(false);
-		} else if (b == details) {
-			getDetails();
+			cancelAction();
 		} else {
 			deleteSong();
 			updateSongFile();
@@ -265,7 +258,7 @@ public class SongLibController {
 				}
 				break;
 		}
-		disableAllButtons(false);
+		disableButtons(false, false, false);
 		listView.setDisable(false);
 	}
 
@@ -276,7 +269,7 @@ public class SongLibController {
 		obsList.sort(null);
 		clearInputs();
 		if (numEntries == 0) {
-			disableButtons(false);
+			disableButtons(false, false, false);
 		}
 		numEntries++;
 		listView.getSelectionModel().select(obsList.indexOf(name));
@@ -284,7 +277,7 @@ public class SongLibController {
 
 	private void getDetails() {
 		info.setVisible(true);
-		inputs.setVisible(false);
+		inputFields.setVisible(false);
 
 		int index = listView.getSelectionModel().getSelectedIndex();
 		if (index >= 0) {
@@ -322,11 +315,24 @@ public class SongLibController {
 			if (numEntries != 0) {
 				getDetails();
 			} else {
-				disableButtons(true);
+				disableButtons(false, true, true);
 				info.setVisible(false);
 				add.requestFocus();
 			}
 		}
+	}
+	
+	private void cancelAction() {
+		clearInputs();
+		inputFields.setVisible(false);
+		if (numEntries == 0) {
+			disableButtons(false, true, true);
+			add.requestFocus();
+		} else {
+			disableButtons(false, false, false);
+			getDetails();
+		}
+		listView.setDisable(false);
 	}
 
 	private boolean isValidInput(String song, String artist, String album, String year) {
@@ -353,20 +359,20 @@ public class SongLibController {
 
 	private void showAddDialogue() {
 		clearInputs();
-		inputs.setVisible(true);
+		inputFields.setVisible(true);
 		info.setVisible(false);
 		if (DETAILS_ON_CLICK) {
 			listView.setDisable(true);
 		}
-		disableAllButtons(true);
+		disableButtons(true, true, true);
 		songNameField.requestFocus();
 		headerText.setText("Enter a new song:");
 	}
 
 	private void showEditDialogue() {
-		inputs.setVisible(true);
+		inputFields.setVisible(true);
 		info.setVisible(false);
-		disableAllButtons(true);
+		disableButtons(true, true, true);
 		headerText.setText("Edit song:");
 
 		int index = listView.getSelectionModel().getSelectedIndex();
@@ -395,17 +401,15 @@ public class SongLibController {
 		yearField.clear();
 	}
 
-	private void disableAllButtons(boolean b) {
-		add.setDisable(b);
-		delete.setDisable(b);
-		details.setDisable(b);
-		edit.setDisable(b);
-	}
-
-	private void disableButtons(boolean b) {
-		delete.setDisable(b);
-		details.setDisable(b);
-		edit.setDisable(b);
+	/**
+	 * @param a add
+	 * @param e	edit
+	 * @param d	delete
+	 */
+	private void disableButtons(boolean a, boolean e, boolean d) {
+		add.setDisable(a);
+		delete.setDisable(d);
+		edit.setDisable(e);
 	}
 
 	private String formatEntry(String s) {

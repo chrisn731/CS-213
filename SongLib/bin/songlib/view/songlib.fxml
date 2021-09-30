@@ -20,13 +20,11 @@
 			onAction="#buttonPress" />
 		<Button fx:id="edit" text="Edit" prefWidth="90" AnchorPane.LeftAnchor="100.0" disable="false"
 			onAction="#buttonPress" />
-		<Button fx:id="details" text="Details" prefWidth="90" AnchorPane.LeftAnchor="200.0" disable="false"
-			onAction="#buttonPress" />
 		<Button fx:id="delete" text="Delete" prefWidth="90" AnchorPane.RightAnchor="0.0" disable="false"
 			onAction="#buttonPress" />
 	</AnchorPane>
 	<!--INPUT FIELDS-->
-	<VBox fx:id="inputs" GridPane.rowIndex="2" spacing="2" visible="false">
+	<VBox fx:id="inputFields" GridPane.rowIndex="2" spacing="2" visible="false">
 		<Text fx:id="headerText" text="Enter a new song:"/>
 		<TextField fx:id="songNameField" promptText="Song name"/>
 		<TextField fx:id="artistNameField" promptText="Artist name"/>
@@ -45,19 +43,19 @@
 	<VBox fx:id="info" GridPane.rowIndex="2" spacing="2" visible="false">
 		<HBox>
 			<Text text="Song: "/>
-			<Text fx:id="songNameText" text="blahblah"/>
+			<Text fx:id="songNameText" text=""/>
 		</HBox>
 		<HBox>
 			<Text text="Artist: "/>
-			<Text fx:id="artistNameText" text="blahblah"/>
+			<Text fx:id="artistNameText" text=""/>
 		</HBox>
 		<HBox>
 			<Text text="Album: "/>
-			<Text fx:id="albumNameText" text="blahblah"/>
+			<Text fx:id="albumNameText" text=""/>
 		</HBox>
 		<HBox>
 			<Text text="Year: "/>
-			<Text fx:id="yearText" text="blahblah"/>
+			<Text fx:id="yearText" text=""/>
 		</HBox>
 	</VBox>
 	
