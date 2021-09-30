@@ -1,7 +1,7 @@
 /*
  * Authors:
- * 	Michael Nelli
- * 	Christopher Naporlee
+ * 	Michael Nelli - mrn73
+ * 	Christopher Naporlee - cmn134
  */
 package songlib.view;
 
@@ -41,20 +41,20 @@ public class SongLibController {
 	@FXML Button confirm;
 	@FXML Button cancel;
 	@FXML ListView<String> listView;
-	
+
 	@FXML VBox inputs;
 	@FXML TextField songNameField;
 	@FXML TextField artistNameField;
 	@FXML TextField albumNameField;
 	@FXML TextField yearField;
 	@FXML Text headerText;
-	
+
 	@FXML VBox info;
 	@FXML Text songNameText;
 	@FXML Text artistNameText;
 	@FXML Text albumNameText;
 	@FXML Text yearText;
-	
+
 	private ObservableList<String> obsList;
 	private HashMap<String, Song> songs = new HashMap<String, Song>();
 	private Song selectedEdit;
@@ -62,32 +62,57 @@ public class SongLibController {
 	private long numEntries;
 
 	private Stage primaryStage;
-	
+
 	private static final String SONG_FILE_PATH = "./songlib.txt";
-	
+	private static final boolean DETAILS_ON_CLICK = false;
+
 	public void init(Stage mainStage) {
-		primaryStage = mainStage; 
+		primaryStage = mainStage;
 		obsList = FXCollections.observableArrayList(loadSongFile());
 		listView.setItems(obsList);
 		obsList.sort(null);
+		if (DETAILS_ON_CLICK) {
+			/*
+			 * TODO: Enabling this causes a bug when pressing Add. If you press
+			 * add and then click on the listview, all buttons are DISABLED and
+			 * you can no longer add in a song.
+			 */
+			listView
+				.getSelectionModel()
+				.selectedIndexProperty()
+				.addListener(
+					(obs, oldv, newv) ->
+						songListClickHandler(mainStage));
+		}
 		if (numEntries > 0) {
 			listView.requestFocus();
-			listView.getSelectionModel().select(0);	
+			listView.getSelectionModel().select(0);
 		} else {
 			add.requestFocus();
 			disableButtons(true);
 		}
 	}
-	
+
+	private void songListClickHandler(Stage mainStage) {
+		// TODO Auto-generated method stub
+		getDetails();
+	}
+
 	/*
 	 * Load the song library history into memory.
 	 * If the file does not exist, create it.
 	 * If the file does exist, read it's entries and store them.
+	 *
+	 * Notes:
+	 *   All input, if done through the application _should_ be processed
+	 *   correctly. However, if someone tries to be funny and edit the file
+	 *   directly but puts in invalid input (such as letters or negative number
+	 *   in the year field) for a field... that field will be DROPPED.
 	 */
 	private ArrayList<String> loadSongFile() {
 		ArrayList<String> songList = new ArrayList<String>();
 		File songFile = new File(SONG_FILE_PATH);
-		
+
 		if (!songFile.exists()) {
 			try {
 				songFile.createNewFile();
@@ -96,39 +121,50 @@ public class SongLibController {
 				e1.printStackTrace();
 			}
 		}
-		
+
 		if (!songFile.canRead() || !songFile.canWrite()) {
-			System.out.println("Can not open file for read or writing.");
+			System.out.println("Can not open song history file for read or writing.");
 		}
-		
+
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(songFile));
 			String line;
-				
+			boolean previouslyCorrupted = false;
+
 			while ((line = reader.readLine()) != null) {
-				String[] x = line.split("\\|", -1);
-				
-				if (x.length != 4) {
-					// TODO Corrupted file
-					System.out.println("File is bad/corrupted, starting from fresh file.");
-					reader.close();
-					return new ArrayList<String>();
+				String[] songPieces = line.split("\\|", -1);
+
+				if (songPieces.length != 4 || songPieces[0].isBlank() || songPieces[1].isBlank()) {
+					if (!previouslyCorrupted) {
+						System.out.println(
+							"Song history file is bad/corrupted. " +
+							"Attempting to salvage non-corrupted songs..."
+						);
+					}
+					continue;
 				}
-				String song = x[0], artist = x[1], album = x[2], year = x[3];
+				String song = songPieces[0].trim(), artist = songPieces[1].trim(),
+						album = songPieces[2].trim(), year = songPieces[3].trim();
 				songList.add(song + " | " + artist);
-				songs.put(formatEntry(song + artist), 
-						new Song(song, artist, album, year));
+				songs.put(
+					formatEntry(song + artist),
+					new Song(
+						song,
+						artist,
+						album,
+						!year.isBlank() && isPositiveInteger(year) ? year : ""
+					)
+				);
 				numEntries++;
 			}
 			reader.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Unable to read from file");
+			System.out.println("Error reading from song history file.");
 			e.printStackTrace();
 		}
 		return songList;
 	}
-	
+
 	@FXML
 	private void buttonPress(ActionEvent e) {
 		Button b = (Button) e.getSource();
@@ -153,7 +189,11 @@ public class SongLibController {
 			updateSongFile();
 		}
 	}
-	
+
+	/*
+	 * Write the songs to the file.
+	 * Song file is updated on each successful song addition or edit.
+	 */
 	private void updateSongFile() {
 		try {
 			/*
@@ -165,33 +205,34 @@ public class SongLibController {
 			if (numEntries > 0) {
 				for (Song entry : songs.values()) {
 					f.write(
-							entry.getName() +
-							"|" +
-							entry.getArtist() +
-							"|" +
-							entry.getAlbum() +
-							"|" +
-							entry.getYear() +
-							"\n"
+						entry.getName() +
+						"|" +
+						entry.getArtist() +
+						"|" +
+						entry.getAlbum() +
+						"|" +
+						entry.getYear() +
+						"\n"
 					);
 				}
 			}
 			f.close();
 		} catch (Exception e) {
-			
+			System.out.println("WARNING! Failed to update song history file.");
+			e.printStackTrace();
 		}
 	}
-	
+
 	private void updateSongs() {
-		String song = songNameField.getText();
-		String artist = artistNameField.getText();
-		String album = albumNameField.getText();
-		String year = yearField.getText().replaceAll("\\s", "");
-		
+		String song = songNameField.getText().trim();
+		String artist = artistNameField.getText().trim();
+		String album = albumNameField.getText().trim();
+		String year = yearField.getText().replaceAll("\\s", "").trim();
+
 		if (!isValidInput(song, artist, album, year)) {
 			return;
 		}
-		
+
 		String key = formatEntry(song + artist);
 		switch (action) {
 			case EDITING:
@@ -227,7 +268,7 @@ public class SongLibController {
 		disableAllButtons(false);
 		listView.setDisable(false);
 	}
-	
+
 	private void addSong(String key, Song song) {
 		String name = song.getName() + " | " + song.getArtist();
 		songs.put(key, song);
@@ -244,7 +285,7 @@ public class SongLibController {
 	private void getDetails() {
 		info.setVisible(true);
 		inputs.setVisible(false);
-		
+
 		int index = listView.getSelectionModel().getSelectedIndex();
 		if (index >= 0) {
 			Song selectedSong = songs.get(formatSearch(obsList.get(index)));
@@ -254,7 +295,7 @@ public class SongLibController {
 			yearText.setText(selectedSong.getYear());
 		}
 	}
-	
+
 	private void deleteSong() {
 		int index = listView.getSelectionModel().getSelectedIndex();
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -266,18 +307,18 @@ public class SongLibController {
 					  	  + "\" from the library?";
 		alert.setContentText(context);
 		alert.showAndWait();
-		
+
 		if (alert.getResult().equals(ButtonType.CANCEL)) {
 			return;
 		}
-		
+
 		if (index >= 0) {
 			songs.remove(formatSearch(obsList.get(index)));
 			obsList.remove(index);
 			if (numEntries > index) {
-				listView.getSelectionModel().select(index);	
+				listView.getSelectionModel().select(index);
 			}
-			numEntries--;		
+			numEntries--;
 			if (numEntries != 0) {
 				getDetails();
 			} else {
@@ -287,10 +328,10 @@ public class SongLibController {
 			}
 		}
 	}
-	
-	private boolean isValidInput(String song, String artist, String album, String year) {	
+
+	private boolean isValidInput(String song, String artist, String album, String year) {
 		if (song.equals("") || artist.equals("")) {
-			showPopup("Missing Fields", 
+			showPopup("Missing Fields",
 					  "",
 					  "Please enter in a song name and artist. Album and year are optional.");
 			return false;
@@ -301,32 +342,33 @@ public class SongLibController {
 					  "Vertical bar ( | ) not permitted.");
 			return false;
 		}
-		if (!year.equals("")) {
-			if (!isPositiveInteger(year)) {
-				showPopup("Invalid Year",
-						  "",
-						  "Please enter in a positive integer for the year.");
-				return false;
-			}
+		if (!year.equals("") && !isPositiveInteger(year)) {
+			showPopup("Invalid Year",
+					"",
+					"Please enter in a positive integer for the year.");
+			return false;
 		}
 		return true;
 	}
-	
+
 	private void showAddDialogue() {
 		clearInputs();
 		inputs.setVisible(true);
 		info.setVisible(false);
+		if (DETAILS_ON_CLICK) {
+			listView.setDisable(true);
+		}
 		disableAllButtons(true);
 		songNameField.requestFocus();
 		headerText.setText("Enter a new song:");
 	}
-	
+
 	private void showEditDialogue() {
 		inputs.setVisible(true);
 		info.setVisible(false);
 		disableAllButtons(true);
 		headerText.setText("Edit song:");
-		
+
 		int index = listView.getSelectionModel().getSelectedIndex();
 		Song s = songs.get(formatSearch(obsList.get(index)));
 		selectedEdit = s;
@@ -336,7 +378,7 @@ public class SongLibController {
 		yearField.setText(s.getYear());
 		listView.setDisable(true);
 	}
-	
+
 	private void showPopup(String title, String header, String context) {
 		Alert alert = new Alert(AlertType.WARNING);
 		alert.initOwner(primaryStage);
@@ -345,44 +387,41 @@ public class SongLibController {
 		alert.setContentText(context);
 		alert.showAndWait();
 	}
-	
+
 	private void clearInputs() {
 		songNameField.clear();
 		artistNameField.clear();
 		albumNameField.clear();
 		yearField.clear();
 	}
-	
+
 	private void disableAllButtons(boolean b) {
 		add.setDisable(b);
 		delete.setDisable(b);
 		details.setDisable(b);
 		edit.setDisable(b);
 	}
-	
+
 	private void disableButtons(boolean b) {
 		delete.setDisable(b);
 		details.setDisable(b);
 		edit.setDisable(b);
 	}
-	
+
 	private String formatEntry(String s) {
 		return s.toLowerCase().replaceAll("\\s", "");
 	}
-	
+
 	private String formatSearch(String s) {
 		return s.toLowerCase().replaceAll("[\\s+\\|\\s+]", "");
 	}
-	
+
 	private boolean isPositiveInteger(String s) {
 		for (int i = 0; i < s.length(); i++) {
 			if (!Character.isDigit(s.charAt(i))) {
 				return false;
 			}
 		}
-		if (Integer.parseInt(s) < 0) {
-			return false;
-		}
-		return true;
+		return Integer.parseInt(s) >= 0;
 	}
 }

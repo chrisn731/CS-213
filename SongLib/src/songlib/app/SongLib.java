@@ -1,6 +1,7 @@
 /* 
- * Michael Nelli
- * Chris Naporlee 
+ * Authors:
+ * 	Michael Nelli - mrn73
+ * 	Christopher Naporlee - cmn134
  */
 
 package songlib.app;
@@ -24,7 +25,6 @@ public class SongLib extends Application {
 		primaryStage.setResizable(false);
 		primaryStage.show();
 
-		
 		SongLibController controller = loader.getController();
 		controller.init(primaryStage);
 	}
