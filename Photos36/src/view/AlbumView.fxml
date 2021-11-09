@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+   fx:controller="controller.AlbumViewController">
+   <children>
+      <MenuBar prefHeight="26.0" prefWidth="827.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem fx:id="buttonNewAlbum" mnemonicParsing="false" onAction="#createAlbum" text="New Album" />
+                  <MenuItem fx:id="buttonNewAlbumFromSearch" mnemonicParsing="false" onAction="#createAlbumFromSearch" text="New Album from Search" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="buttonQuit" mnemonicParsing="false" onAction="#menuSelect" text="Quit" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem fx:id="buttonDelete" mnemonicParsing="false" onAction="#menuSelect" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="User">
+            <items>
+              <MenuItem fx:id="buttonLogout" mnemonicParsing="false" onAction="#logout" text="Logout" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <ScrollPane fx:id="scrollpane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="400.0" prefWidth="631.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="75.0">
+         <content>
+            <TilePane fx:id="albumList" hgap="30.0" prefTileHeight="200.0" prefTileWidth="175.0" vgap="30.0">
+            </TilePane>
+         </content>
+      </ScrollPane>
+      <TextField fx:id="textboxSearch" layoutX="10.0" layoutY="38.0" prefHeight="26.0" prefWidth="757.0" promptText="Search all photos" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="38.0" />
+      <ComboBox fx:id="comboFilter" layoutX="697.0" layoutY="38.0" prefHeight="26.0" prefWidth="118.0" promptText="Search filter" style="-fx-background-color: #b4b4b2;" AnchorPane.rightAnchor="12.0" />
+   </children>
+</AnchorPane>

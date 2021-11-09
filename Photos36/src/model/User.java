@@ -10,10 +10,23 @@ public class User implements Serializable {
 	
 	public User(String name) {
 		username = name;
+		albums = new ArrayList<Album>();
 	}
 
 	public String getUserName() {
 		return username;
+	}
+	
+	public boolean addAlbum(Album album) {
+		if (!albums.contains(album)) {
+			albums.add(album);
+			return true;
+		}
+		return false;
+	}
+	
+	public void removeAlbum(Album album) {
+		albums.remove(album);
 	}
 	
 	public ArrayList<Album> getAlbums() {

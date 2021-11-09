@@ -27,21 +27,27 @@ public class Photo implements Serializable {
 		}
 	}
 	
-	private ArrayList<Tag> tags = new ArrayList<>();
+	private ArrayList<Tag> tags = new ArrayList<Tag>();
 	private Date date = null;
-	private File filePath = null;
+	private String filePath = null;
 	private String caption = "";
 	
 	public Photo() {
 		this.caption = "";
 	}
+	
+	public Photo(String caption) {
+		this.caption = (caption == null) ? "" : caption;
+		this.filePath = this.caption;
+	}
+	
 	public ArrayList<Tag> getTags() {
 		return tags;
 	}
 	
-	public File getFile() {
-		return filePath;
-	}
+	//public File getFile() {
+	//	return filePath;
+	//}
 	
 	public boolean addTags() {
 		return false;

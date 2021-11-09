@@ -1,0 +1,29 @@
+.button {
+    -fx-background-color: transparent;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
+
+.button:hover {
+	-fx-cursor: hand;
+}
+
+.editButton {
+	-fx-background-size: 25px;
+	-fx-background-image: url('/assets/edit_icon.png');
+}
+
+.editButton:hover {
+	-fx-background-size: 28px;
+}
+
+.deleteButton {
+	-fx-background-image: url('/assets/garbage_closed_icon_small.png');
+	-fx-background-size: 19px;
+}
+
+.deleteButton:hover {
+	-fx-background-image: url('/assets/garbage_open_icon_small.png');
+	-fx-background-position: left 4 top 0;
+	-fx-background-size: 20px;
+}

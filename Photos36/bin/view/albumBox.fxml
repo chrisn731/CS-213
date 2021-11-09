@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="root" xmlns="http://javafx.com/javafx/1" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@/view/edit_button_background.css" fx:controller="controller.AlbumPaneController">
+ <children>
+	<Text fx:id="labelAlbumName" layoutX="4.0" layoutY="192.0" strokeType="OUTSIDE" strokeWidth="0.0" text="stock" textAlignment="CENTER" wrappingWidth="166.93671035766602">
+	   <font>
+		  <Font name="Nirmala UI Semilight" size="16.0" />
+	   </font>
+	</Text>
+	<Pane fx:id="paneAlbum" prefHeight="175.0" prefWidth="175.0" style="-fx-background-color: RGBA(125,125,125,1);" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	   <children>
+		  <ImageView fitHeight="175.0" fitWidth="175.0" pickOnBounds="true" preserveRatio="true" />
+		  <Button fx:id="buttonEdit" styleClass="editButton" layoutX="111.0" layoutY="2.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" onAction="#editAlbumName" />
+          <Button fx:id="buttonDelete" styleClass="deleteButton" layoutX="141.0" layoutY="2.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" onAction="#deleteAlbum" />
+		  <Text fx:id="labelPhotoCount" layoutX="4.0" layoutY="93.0" strokeType="OUTSIDE" strokeWidth="0.0" text="5,575 photos" textAlignment="CENTER" wrappingWidth="166.93671035766602">
+			 <font>
+				<Font name="Nirmala UI Semilight" size="24.0" />
+			 </font>
+		  </Text>
+		  <Text fx:id="labelDates" layoutX="4.0" layoutY="111.0" strokeType="OUTSIDE" strokeWidth="0.0" text="10/22/2021 - 10/22/2021" textAlignment="CENTER" wrappingWidth="166.93671035766602">
+			 <font>
+				<Font name="Nirmala UI Semilight" size="11.0" />
+			 </font>
+		  </Text>
+	   </children>
+	</Pane>
+ </children>
+</AnchorPane>
