@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginViewController">
+   <children>
+      <Text layoutX="36.0" layoutY="133.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hi There..." textAlignment="CENTER" wrappingWidth="528.536527633667" AnchorPane.bottomAnchor="250.6865234375" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="35.46347236633301">
+         <font>
+            <Font name="Nirmala UI Semilight" size="65.0" />
+         </font>
+      </Text>
+      <TextField fx:id="textboxUsername" layoutX="117.0" layoutY="212.0" prefHeight="26.0" prefWidth="366.0" promptText="Username" AnchorPane.bottomAnchor="161.6" AnchorPane.leftAnchor="117.0" AnchorPane.rightAnchor="116.60000000000002" />
+      <TextField fx:id="textboxPassword" layoutX="117.0" layoutY="246.0" prefHeight="26.0" prefWidth="366.0" promptText="Password" AnchorPane.bottomAnchor="127.6" AnchorPane.leftAnchor="117.0" AnchorPane.rightAnchor="116.60000000000002" />
+      <Button fx:id="buttonLogin" layoutX="116.0" layoutY="283.0" mnemonicParsing="false" onMouseClicked="#doLogin" prefHeight="26.0" prefWidth="366.0" style="-fx-background-color: #2c6fa4; -fx-cursor: hand;" text="SIGN IN" textFill="WHITE" AnchorPane.bottomAnchor="90.6" AnchorPane.leftAnchor="116.0" AnchorPane.rightAnchor="117.60000000000002">
+         <font>
+            <Font name="Nirmala UI" size="12.0" />
+         </font></Button>
+      <Button fx:id="exitButton" layoutX="116.0" layoutY="320.0" mnemonicParsing="false" onMouseClicked="#doExit" prefHeight="26.0" prefWidth="366.0" style="-fx-background-color: #2c6fa4; -fx-cursor: hand;" text="EXIT" textFill="WHITE" />
+   </children>
+</AnchorPane>

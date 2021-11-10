@@ -1,33 +1,28 @@
 package app;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import controller.AlbumViewController;
+import controller.LoginViewController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import model.Admin;
-import model.User;
 
 public class Photos extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		try {
-			Admin.loadFromDisk();
-		} catch (FileNotFoundException e) {
-			System.out.println("File not there");
-		}
+		Admin.loadFromDisk();
 	
 		/* START ALBUM TESTING: Launch into Album View */
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/view/AlbumView.fxml"));
-		AnchorPane root = (AnchorPane)loader.load();
-		AlbumViewController avc = loader.getController();
-		avc.init(primaryStage, new User(null));
+		AnchorPane root;
+		loader.setLocation(getClass().getResource("/view/LoginView.fxml"));
+		root = (AnchorPane)loader.load();
+		LoginViewController lvc = loader.getController();
+		lvc.init(primaryStage);
 		/* END ALBUM TESTING */
 		
 		Scene scene = new Scene(root);

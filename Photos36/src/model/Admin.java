@@ -59,34 +59,39 @@ public class Admin {
 		System.out.println("Done.");
 	}
 	
-	public static void setup() {
+	private static void setupDefaults() {
+		users.add(new User("stock"));
+		users.add(new User("admin"));
 		try {
-			loadFromDisk();
-		} catch (ClassNotFoundException | IOException e) {
+			syncToDisk();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (users.size() == 0) {
-			// TODO: Setup Stock User
-		}
 	}
-	
 	/**
 	 * Loads in photos data from disk. Called upon application exit and cleanup.
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
 	@SuppressWarnings("unchecked")
-	public static void loadFromDisk() throws IOException, ClassNotFoundException {
+	public static void loadFromDisk() throws ClassNotFoundException {
 		System.out.println(
 				"Loading " +
 				dataDir + File.separator + dataFileName +
 				" from disk..."
 		);
-		FileInputStream fis = new FileInputStream(dataDir + File.separator + dataFileName);
-		ObjectInputStream ois = new ObjectInputStream(fis);
-		users = (ArrayList<User>) ois.readObject();
-		ois.close();
-		System.out.println("Done.");
+		
+		try {
+			FileInputStream fis = new FileInputStream(dataDir + File.separator + dataFileName);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			users = (ArrayList<User>) ois.readObject();
+			ois.close();
+			System.out.println("Done.");
+		} catch (FileNotFoundException e) {
+			setupDefaults();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
