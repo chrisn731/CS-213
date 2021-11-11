@@ -6,9 +6,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
+import app.Assets;
+import app.Scenes;
+import javafx.animation.ScaleTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -21,17 +25,104 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import model.Album;
 import model.Photo;
 import model.User;
 
-public class AlbumViewController {
+public class AlbumViewController extends SceneController {
 
+	public static class AlbumPaneController {
+		@FXML private Text labelAlbumName;
+		@FXML private Text labelPhotoCount;
+		@FXML private Text labelDates;
+		@FXML private Button buttonEdit;
+		@FXML private Button buttonDelete;
+		@FXML private Pane paneAlbum;
+		@FXML private AnchorPane root;
+		
+		private Album album;
+		private AlbumViewController parentController;
+		private final double HOVER_OPACITY = .4;
+		
+		public void init(Album a, AlbumViewController avc) {
+			album = a;
+			parentController = avc;
+			labelAlbumName.setText(album.getName());
+			
+			playScaleAnimation();
+			
+			for (Node n : paneAlbum.getChildren()) {
+				n.setVisible(false);
+			}
+			paneAlbum.hoverProperty().addListener((observable, oldValue, newValue) -> {
+				if (newValue) {
+					paneAlbum.setStyle("-fx-background-color: rgba(125,125,125," + HOVER_OPACITY + ");"
+							         + "-fx-cursor: hand;"
+							         + "-fx-border-color: black");
+				} else {
+					paneAlbum.setStyle("-fx-background-color: rgba(125,125,125," + 1 + ")");
+				}
+				for (Node n : paneAlbum.getChildren()) {
+					n.setVisible(newValue);
+				}
+				labelPhotoCount.setText(Integer.toString(album.getPhotoCount()) + " Photos");
+			});
+			
+			paneAlbum.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+				public void handle(MouseEvent click) {
+					if (click.getClickCount() == 1) {
+						parentController.requestAlbumOpen(album);
+					}
+				}
+			});
+			labelDates.setText("");
+		}
+		
+		@FXML
+		private void editAlbumName() {
+			String newName;
+			if ((newName = parentController.editAlbumName(album.getName())) != null) {
+				labelAlbumName.setText(newName);
+				album.setName(newName);
+			}
+		}
+		
+		@FXML
+		private void deleteAlbum() {
+			parentController.deleteAlbum(this, root);
+		}
+		
+		private void playScaleAnimation() {
+			paneAlbum.setScaleX(.05);
+			paneAlbum.setScaleY(.05);
+			ScaleTransition st = new ScaleTransition();
+			st.setNode(paneAlbum);
+			st.setDuration(Duration.millis(200));
+			st.setByX(.95);
+			st.setByY(.95);
+			st.setCycleCount(1);
+			st.setAutoReverse(true);
+			st.play();
+		}
+		
+		public Album getAlbum() {
+			return album;
+		}
+		
+		public void setVisible(boolean b) {
+			root.setVisible(b);
+		}
+	}
+	
 	@FXML private MenuItem buttonNewAlbum;
 	@FXML private MenuItem buttonNewAlbumFromSearch;
 	@FXML private MenuItem buttonQuit;
@@ -42,13 +133,13 @@ public class AlbumViewController {
 	@FXML private ComboBox<String> comboFilter;
 	@FXML private TextField textboxSearch;
 	
-	private Stage stage;
+	//private Stage stage;
 	private User user;
 	private ArrayList<AlbumPaneController> albumPanes;
-	private final int MAX_NAME_LENGTH = 20;
+	//private final int MAX_NAME_LENGTH = 20;
 	
 	public void init(Stage s, User u) {
-		this.stage = s;
+		//this.stage = s;
 		this.user = u;
 		albumPanes = new ArrayList<AlbumPaneController>();
 		comboFilter.setItems(FXCollections.observableArrayList("Sort by: None", "Sort by: Date", "Sort by: Tags"));
@@ -64,6 +155,19 @@ public class AlbumViewController {
 		});
 		
 		//scrollpane.vvalueProperty().bind(albumList.heightProperty());
+		
+		for (Album a : u.getAlbums()) {
+			FXMLLoader loader = loadAsset(Assets.ALBUM_PANE);
+			AlbumPaneController albumPaneController = loader.getController();
+			albumPaneController.init(a, this);
+			albumList.getChildren().add(loader.getRoot());
+			albumPanes.add(albumPaneController);
+		}
+	}
+	
+	public void requestAlbumOpen(Album a) {
+		PhotoViewController pvc = (PhotoViewController) switchScene(Scenes.PHOTO_VIEW);
+		pvc.init(user, a);
 	}
 	
 	@FXML
@@ -94,30 +198,17 @@ public class AlbumViewController {
 
 	@FXML
 	private void createAlbum() {
-		String name = confirmAction("New Album", null, "Enter name: ", null, true);
+		String name = getUserInput("New Album", null, "Enter name: ", null, true);
 		if (name == null || duplicateNameFound(name))
 			return;
-
-		/* Create an albumPane from an FXML file to represent an album in the tilepane*/
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/view/albumBox.fxml"));
-		AnchorPane albumPane;
-		try {
-			albumPane = (AnchorPane)loader.load();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-		
+		FXMLLoader loader = loadAsset(Assets.ALBUM_PANE);
 		AlbumPaneController albumPaneController = loader.getController();
 		Album album = new Album(name);
-		album.addPhoto(new Photo("hi"));
-		album.addPhoto(new Photo("hey"));
 		user.addAlbum(album);
 		albumPaneController.init(album, this);
-		albumList.getChildren().add(albumPane);
+		albumList.getChildren().add(loader.getRoot());
 		albumPanes.add(albumPaneController);
-		//scrollpane.setVvalue(1);
+		scrollpane.setVvalue(1);
 	}
 	
 	private boolean duplicateNameFound(String name) {
@@ -130,70 +221,14 @@ public class AlbumViewController {
 		return false;
 	}
 	
-	/**
-	 * Creates and displays a TextInputDialog box where the user adds or edits the name of an album.
-	 * <p>
-	 * All albums must have at least 1 character (not including spaces) to be valid.
-	 * @param title  of the TextInputDialog
-	 * @param header  of the TextInputDialog
-	 * @param content  of the TextInputDialog
-	 * @param prompText  of the TextField
-	 * @param disableOK
-	 * @return String within TextField. If empty, returns null.
-	 */
-	public String confirmAction(String title, String header, String content, String prompText, boolean disableOK) {
-		TextInputDialog dialog = new TextInputDialog();
-		dialog.initOwner(stage);
-		dialog.setTitle(title);
-		dialog.setHeaderText(header);
-		dialog.setContentText(content);
-		Node buttonOK = dialog.getDialogPane().lookupButton(ButtonType.OK);
-		
-		TextField editor = dialog.getEditor();
-		editor.setText(prompText);
-		buttonOK.setDisable(disableOK);
-		
-		/* Prevents the user from clicking OK without having a proper album name */
-		editor.textProperty().addListener((observable, oldValue, newValue) -> {
-		    if (newValue.length() > MAX_NAME_LENGTH)
-		    	editor.setText(newValue = oldValue);
-		    buttonOK.setDisable(newValue.trim().equals(""));
-		});
-		
-		/* Making it here means our album has at least 1 letter in it. Clicking cancel will return null. */
-		Optional<String> ret = dialog.showAndWait();
-		if (ret.isPresent())
-			return ret.get(); 
-		return null;
-	}
-	
-	/**
-	 * Creates and displays an Alert message when there is an error.
-	 * @param title  of the Alert pop-up
-	 * @param header  of the Alert pop-up
-	 * @param context  of the Alert pop-up
-	 */
-	private boolean showPopup(String title, String header, String context, AlertType t) {
-		Alert alert = new Alert(t);
-		alert.initOwner(stage);
-		alert.setTitle(title);
-		alert.setHeaderText(header);
-		alert.setContentText(context);
-		alert.showAndWait();
-		if (alert.getResult().equals(ButtonType.OK))
-			return true;
-		return false;
-	}
-	
 	public String editAlbumName(String oldName) {
-		String newName = confirmAction("Edit Name", null, "Edit name: ", oldName, false);
+		String newName = getUserInput("Edit Name", null, "Edit name: ", oldName, false);
 		if (newName == null || duplicateNameFound(newName))
 			return null;
 		return newName;
 	}
 	
 	public void deleteAlbum(AlbumPaneController apc, Node root) {
-		//double vVal = scrollpane.getVvalue();
 		if (!showPopup("Delete Album", null, "Are you sure you want to delete " + apc.getAlbum().getName() + "?", AlertType.CONFIRMATION))
 			return;
 		user.removeAlbum(apc.getAlbum());
@@ -203,16 +238,5 @@ public class AlbumViewController {
 	
 	public void setVval() {
 		scrollpane.setVvalue(1);
-	}
-	
-	private void easteregg() {
-		/*Hidden easteregg -- don't forget to add back javafx.media to vm
-		if (name.equals("helicopters")) {
-			File mediaFile = new File("C:\\Users\\mikes\\Documents\\Java Projects\\Software Methodology\\Photos36\\src\\assets\\ALL_IS_SEE_IS_HELICOPTERS.mp3");
-			Media m = new Media(mediaFile.toURI().toString());
-			MediaPlayer player = new MediaPlayer(m);
-			player.play();
-		}
-		*/
 	}
 }

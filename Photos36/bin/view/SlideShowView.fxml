@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SlideShowController">
+   <children>
+      <AnchorPane layoutX="36.0" layoutY="110.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="280.0" prefWidth="524.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0">
+         <children>
+            <HBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="280.0" prefWidth="450.0" style="-fx-background-color: black;" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+               <children>
+                  <ImageView fx:id="imageDisplay" fitHeight="280.0" fitWidth="340.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </ImageView>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+      <Text layoutX="212.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Sample Album">
+         <font>
+            <Font name="Nirmala UI Semilight" size="28.0" />
+         </font>
+      </Text>
+      <Line endX="130.0" layoutX="300.0" layoutY="58.0" startX="-130.0" />
+      <Text layoutX="249.0" layoutY="86.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Image Name">
+         <font>
+            <Font name="Nirmala UI Semilight" size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="264.0" layoutY="437.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Image Date">
+         <font>
+            <Font name="Nirmala UI Semilight" size="14.0" />
+         </font>
+      </Text>
+      <Button fx:id="prevPhoto" layoutX="148.0" layoutY="419.0" mnemonicParsing="false" onAction="#switchPrevPhoto" text="Previous" />
+      <Button fx:id="nextPhoto" layoutX="401.0" layoutY="419.0" mnemonicParsing="false" onAction="#switchNextPhoto" prefHeight="25.0" prefWidth="61.0" text="Next" />
+   </children>
+</AnchorPane>

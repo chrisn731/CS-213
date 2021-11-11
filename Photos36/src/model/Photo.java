@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javafx.scene.image.Image;
+
 public class Photo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -33,7 +35,7 @@ public class Photo implements Serializable {
 	private String caption = "";
 	
 	public Photo() {
-		this.caption = "";
+		this.caption = "hey";
 	}
 	
 	public Photo(String caption) {
@@ -41,13 +43,22 @@ public class Photo implements Serializable {
 		this.filePath = this.caption;
 	}
 	
+	public Photo(File f) {
+		this();
+		filePath = f.toString();
+	}
+
+	public String getCaption() {
+		return caption;
+	}
+	
 	public ArrayList<Tag> getTags() {
 		return tags;
 	}
 	
-	//public File getFile() {
-	//	return filePath;
-	//}
+	public String getPath() {
+		return filePath;
+	}
 	
 	public boolean addTags() {
 		return false;

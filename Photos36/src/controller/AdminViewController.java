@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import app.Scenes;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,7 +26,7 @@ import javafx.stage.Stage;
 import model.Admin;
 import model.User;
 
-public class AdminViewController {
+public class AdminViewController extends SceneController {
 
 	@FXML Button addUserButton;
 	@FXML Button deleteUserButton;
@@ -34,7 +35,7 @@ public class AdminViewController {
 	@FXML MenuItem quitOption;
 	private ArrayList<User> users;
 	private ObservableList<String> obsList;
-	private Stage s;
+	//private Stage s;
 	
 	public void init(Stage s) {
 		this.s = s;
@@ -51,14 +52,15 @@ public class AdminViewController {
 	
 	@FXML
 	private void addUser(MouseEvent m) {
-		String username = getUserToAdd("New User", null, "Enter new user's name: ", null, true);
+		String username = getUserInput("New User", null, "Enter new user's name: ", null, true);
 		if (username == null)
 			return;
 		if (Admin.getUserByName(username) != null) {
 			showPopup(
 					"Error adding " + username,
 					"", 
-					"You can not add '" + username + "' as they already exist!"
+					"You can not add '" + username + "' as they already exist!",
+					AlertType.WARNING
 			);
 			return;
 		}
@@ -77,63 +79,21 @@ public class AdminViewController {
 			showPopup(
 				"Error Deleting " + userToDelete,
 				"", 
-				"You can not delete '" + userToDelete + "'!"
+				"You can not delete '" + userToDelete + "'!",
+				AlertType.WARNING
 			);
 			return;
 		}
-		ButtonType b = getConfirmation(
+		boolean b = showPopup(
 				"Delete '" + userToDelete + "'?",
 				"",
-				"Are you sure you want to delete '" + userToDelete + "'?"
+				"Are you sure you want to delete '" + userToDelete + "'?",
+				AlertType.CONFIRMATION
 		);
-		if (b.equals(ButtonType.CANCEL))
+		if (!b)
 			return;
 		Admin.removeUser(userToDelete);
 		obsList.remove(userToDelete);
-	}
-	
-	private String getUserToAdd(String title, String header, String content, String prompText, boolean disableOK) {
-		TextInputDialog dialog = new TextInputDialog();
-		dialog.initOwner(s);
-		dialog.setTitle(title);
-		dialog.setHeaderText(header);
-		dialog.setContentText(content);
-		Node buttonOK = dialog.getDialogPane().lookupButton(ButtonType.OK);
-		
-		TextField editor = dialog.getEditor();
-		editor.setText(prompText);
-		buttonOK.setDisable(disableOK);
-		
-		/* Prevents the user from clicking OK without having a proper album name */
-		editor.textProperty().addListener((observable, oldValue, newValue) -> {
-		    if (newValue.length() > 20)
-		    	editor.setText(newValue = oldValue);
-		    buttonOK.setDisable(newValue.isBlank());
-		});
-		
-		/* Making it here means our album has at least 1 letter in it. Clicking cancel will return null. */
-		Optional<String> ret = dialog.showAndWait();
-		return ret.isPresent() ? ret.get() : null;
-	}
-	
-
-	private void showPopup(String title, String header, String context) {
-		Alert alert = new Alert(AlertType.WARNING);
-		alert.initOwner(s);
-		alert.setTitle(title);
-		alert.setHeaderText(header);
-		alert.setContentText(context);
-		alert.showAndWait();
-	}
-	
-	private ButtonType getConfirmation(String title, String header, String context) {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.initOwner(s);
-		alert.setTitle(title);
-		alert.setHeaderText("");
-		alert.setContentText(context);
-		alert.showAndWait();
-		return alert.getResult();
 	}
 	
 	@FXML
@@ -143,18 +103,7 @@ public class AdminViewController {
 	
 	@FXML
 	private void doLogout() {
-		FXMLLoader loader = new FXMLLoader();
-		AnchorPane root = null;
-		loader.setLocation(getClass().getResource("/view/LoginView.fxml"));
-		try {
-			root = (AnchorPane)loader.load();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		LoginViewController lvc = loader.getController();
+		LoginViewController lvc = (LoginViewController) switchScene(Scenes.LOGIN);
 		lvc.init(s);
-		Scene scene = new Scene(root);
-		s.setScene(scene);
 	}
 }

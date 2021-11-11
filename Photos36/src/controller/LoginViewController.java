@@ -2,31 +2,43 @@ package controller;
 
 import java.io.IOException;
 
+import app.Scenes;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import model.Admin;
 import model.User;
 
-public class LoginViewController {
+public class LoginViewController extends SceneController {
 	
 	@FXML TextField textboxUsername;
 	@FXML TextField textboxPassword; // UNUSED
-	Stage s;
+	//Stage s;
 	
 	public void init(Stage s) {
 		this.s = s;
+		
+		textboxUsername.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent key) {
+				if (key.getCode().equals(KeyCode.ENTER))
+					doLogin(null);
+			}
+		});
 	}
 	
 	@FXML
 	private void doLogin(MouseEvent m) {
 		String input = textboxUsername.getText();
-		
+
 		if (input.isBlank()) {
 			System.out.println("Please enter username.");
 			return;
@@ -48,35 +60,13 @@ public class LoginViewController {
 	}
 	
 	private void loginAsAdmin() {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/view/AdminView.fxml"));
-		AnchorPane root = null;
-		try {
-			 root = (AnchorPane)loader.load();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		AdminViewController avc = loader.getController();
+		AdminViewController avc = (AdminViewController) switchScene(Scenes.ADMIN_VIEW);
 		avc.init(s);
-		Scene scene = new Scene(root);
-		s.setScene(scene);
 	}
 
 	private void loginNormal(String input) {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/view/AlbumView.fxml"));
-		AnchorPane root = null;
-		try {
-			 root = (AnchorPane)loader.load();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		AlbumViewController avc = loader.getController();
-		avc.init(s, new User(null));
-		Scene scene = new Scene(root);
-		s.setScene(scene);
+		AlbumViewController avc = (AlbumViewController) switchScene(Scenes.ALBUM_VIEW);
+		avc.init(s, Admin.getUserByName(input));
 	}
 
 	@FXML

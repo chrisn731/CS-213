@@ -16,14 +16,12 @@ public class Photos extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		Admin.loadFromDisk();
 	
-		/* START ALBUM TESTING: Launch into Album View */
 		FXMLLoader loader = new FXMLLoader();
 		AnchorPane root;
 		loader.setLocation(getClass().getResource("/view/LoginView.fxml"));
 		root = (AnchorPane)loader.load();
 		LoginViewController lvc = loader.getController();
 		lvc.init(primaryStage);
-		/* END ALBUM TESTING */
 		
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
