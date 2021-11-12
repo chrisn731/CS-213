@@ -2,7 +2,8 @@ package app;
 
 public enum Assets implements Loadable {
 	ALBUM_PANE("/view/albumBox.fxml"),
-	PHOTO_PANE("/view/photoPane.fxml");
+	PHOTO_PANE("/view/photoPane.fxml"),
+	SLIDESHOW("/view/SlideShowView.fxml");
 	
 	private final String filePath;
 	

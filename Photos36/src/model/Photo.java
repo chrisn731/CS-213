@@ -2,35 +2,18 @@ package model;
 
 import java.io.File;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
-
-import javafx.scene.image.Image;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Photo implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	/*
-	 * Photo is the only class that should worry about the internals of Tag
-	 */
-	public class Tag implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private String name;
-		private String value;
-		
-		public Tag(String name) {
-			this.name = name;
-			this.value = "";
-		}
-		
-		public Tag(String name, String value) {
-			this.name = name;
-			this.value = value;
-		}
-	}
 	
-	private ArrayList<Tag> tags = new ArrayList<Tag>();
-	private Date date = null;
+	private Map<String, ArrayList<String>> tags = new HashMap<>();
+	private LocalDate date = null;
 	private String filePath = null;
 	private String caption = "";
 	
@@ -40,7 +23,6 @@ public class Photo implements Serializable {
 	
 	public Photo(String caption) {
 		this.caption = (caption == null) ? "" : caption;
-		this.filePath = this.caption;
 	}
 	
 	public Photo(File f) {
@@ -52,23 +34,37 @@ public class Photo implements Serializable {
 		return caption;
 	}
 	
-	public ArrayList<Tag> getTags() {
-		return tags;
+	public Iterator<String> getTagKeys() {
+		return tags.keySet().iterator();
+	}
+	
+	public Iterator<String> getTagValues(String tagKey) {
+		ArrayList<String> tagVals = tags.get(tagKey);
+		return tagVals != null ? tagVals.iterator() : Collections.emptyIterator();
+	}
+	
+	public boolean tagPairExists(String tagKey, String tagVal) {
+		ArrayList<String> tagVals = tags.get(tagKey);
+		return tagVals != null ? tagVals.contains(tagVal) : false;
+	}
+	
+	public void addTagPair(String tagKey, String tagVal) {
+		if (tagPairExists(tagKey, tagVal))
+			return;
+		
+		ArrayList<String> tagVals = tags.get(tagKey);
+		if (tagVals == null) {
+			tagVals = new ArrayList<>();
+			tags.put(tagKey, tagVals);
+		}
+		tagVals.add(tagVal);
 	}
 	
 	public String getPath() {
 		return filePath;
 	}
 	
-	public boolean addTags() {
-		return false;
-	}
-	
-	public boolean removeTag() {
-		return false;
-	}
-	
-	public Date getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 	

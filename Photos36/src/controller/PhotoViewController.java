@@ -1,16 +1,13 @@
 package controller;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import app.Assets;
 import app.Scenes;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -22,15 +19,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.TilePane;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import model.Album;
 import model.Photo;
-import model.Photo.Tag;
 import model.User;
 
 public class PhotoViewController extends SceneController {
@@ -133,10 +128,24 @@ public class PhotoViewController extends SceneController {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Choose picture to add");
 		fileChooser.getExtensionFilters().addAll(
-				new ExtensionFilter(
-						"Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif"
-				)
+			new ExtensionFilter(
+					"Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif"
+			)
 		);
 		return fileChooser.showOpenDialog(s);
+	}
+	
+	@FXML
+	private void startSlideShow() {
+		Stage stage = new Stage();
+		FXMLLoader loader = loadAsset(Assets.SLIDESHOW);
+		SlideShowViewController ssc = loader.getController();
+		Scene slideScene = new Scene(loader.getRoot());
+		ssc.init(album);
+		stage.setScene(slideScene);
+		stage.setTitle(album.getName() + "'s SlideShow");
+		stage.setResizable(false);
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.show();
 	}
 }

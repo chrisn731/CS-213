@@ -1,38 +1,27 @@
 package controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Optional;
-
 import app.Scenes;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import model.Admin;
 import model.User;
 
 public class AdminViewController extends SceneController {
 
-	@FXML Button addUserButton;
-	@FXML Button deleteUserButton;
-	@FXML ListView<String> userView;
-	@FXML MenuItem logoutOption;
-	@FXML MenuItem quitOption;
+	@FXML private Button addUserButton;
+	@FXML private Button deleteUserButton;
+	@FXML private ListView<String> userView;
+	@FXML private MenuItem logoutOption;
+	@FXML private MenuItem quitOption;
 	private ArrayList<User> users;
 	private ObservableList<String> obsList;
 	//private Stage s;
