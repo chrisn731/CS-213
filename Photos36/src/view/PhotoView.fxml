@@ -28,7 +28,7 @@
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="buttonCloseAlbum" mnemonicParsing="false" onAction="#closeAlbum" text="Close Album" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="buttonQuit" mnemonicParsing="false" text="Quit" />
+                  <MenuItem onAction="#doQuit" fx:id="buttonQuit" mnemonicParsing="false" text="Quit" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
@@ -39,7 +39,7 @@
             </Menu>
             <Menu mnemonicParsing="false" text="User">
                <items>
-                  <MenuItem fx:id="buttonLogout" mnemonicParsing="false" text="Logout" />
+                  <MenuItem onAction="#doLogout" fx:id="buttonLogout" mnemonicParsing="false" text="Logout" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="View">

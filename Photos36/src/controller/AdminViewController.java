@@ -1,6 +1,7 @@
 package controller;
 
-import java.util.ArrayList;
+import java.util.Iterator;
+
 import app.Scenes;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -11,7 +12,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
 import model.Admin;
 import model.User;
 
@@ -22,21 +22,16 @@ public class AdminViewController extends SceneController {
 	@FXML private ListView<String> userView;
 	@FXML private MenuItem logoutOption;
 	@FXML private MenuItem quitOption;
-	private ArrayList<User> users;
 	private ObservableList<String> obsList;
-	//private Stage s;
 	
-	public void init(Stage s) {
-		this.s = s;
-		users = Admin.getUsers();
-		ArrayList<String> list = new ArrayList<>();
-		for (User u : users) {
-			list.add(u.getUserName());
-		}
-		obsList = FXCollections.observableArrayList(list);
+	public void init() {
+		obsList = FXCollections.observableArrayList();
+		for (Iterator<User> i = Admin.getUsers(); i.hasNext();)
+			obsList.add(i.next().getUserName());
 		userView.setItems(obsList);
 		userView.requestFocus();
 		userView.getSelectionModel().select(0);
+		s.setTitle("Photo Library - Admin Panel");
 	}
 	
 	@FXML
@@ -44,12 +39,13 @@ public class AdminViewController extends SceneController {
 		String username = getUserInput("New User", null, "Enter new user's name: ", null, true);
 		if (username == null)
 			return;
+		username = username.strip();
 		if (Admin.getUserByName(username) != null) {
 			showPopup(
-					"Error adding " + username,
-					"", 
-					"You can not add '" + username + "' as they already exist!",
-					AlertType.WARNING
+				"Error adding " + username,
+				"", 
+				"You can not add '" + username + "' as they already exist!",
+				AlertType.WARNING
 			);
 			return;
 		}
@@ -73,13 +69,13 @@ public class AdminViewController extends SceneController {
 			);
 			return;
 		}
-		boolean b = showPopup(
+		boolean approved = showPopup(
 				"Delete '" + userToDelete + "'?",
 				"",
 				"Are you sure you want to delete '" + userToDelete + "'?",
 				AlertType.CONFIRMATION
 		);
-		if (!b)
+		if (!approved)
 			return;
 		Admin.removeUser(userToDelete);
 		obsList.remove(userToDelete);
@@ -93,6 +89,6 @@ public class AdminViewController extends SceneController {
 	@FXML
 	private void doLogout() {
 		LoginViewController lvc = (LoginViewController) switchScene(Scenes.LOGIN);
-		lvc.init(s);
+		lvc.init();
 	}
 }

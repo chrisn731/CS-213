@@ -47,6 +47,7 @@ public class SlideShowViewController {
 	 */
 	@FXML private Text albumNameText;
 	
+	// TODO: PICK TEXT OR LABEL AND REMOVE THIS THING
 	@FXML private Label imageNameLabel;
 	
 	/**

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Utility Class to manipulate user database
@@ -19,8 +20,8 @@ public class Admin {
 	private static final String dataDir = "dat";
 	private static final String dataFileName = "photos.dat";
 	
-	public static ArrayList<User> getUsers() {
-		return users;
+	public static Iterator<User> getUsers() {
+		return users.iterator();
 	}
 	
 	public static User getUserByName(String username) {

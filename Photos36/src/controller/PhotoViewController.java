@@ -3,6 +3,7 @@ package controller;
 import java.io.File;
 import app.Assets;
 import app.Scenes;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -43,7 +44,7 @@ public class PhotoViewController extends SceneController {
 		public void init(PhotoViewController pvc, Photo p) {
 			parentController = pvc;
 			photo = p;
-			imageview.setImage(new Image("file:" + p.getPath()));
+			imageview.setImage(new Image("file:" + p.getPath(), true));
 			labelCaption.setText(p.getCaption());
 			
 			imageview.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
@@ -90,10 +91,18 @@ public class PhotoViewController extends SceneController {
 		this.user = u;
 		this.album = a;
 		comboSearchFilter.setItems(FXCollections.observableArrayList("Sort by: None", "Sort by: Date", "Sort by: Tags"));
-		
+		s.setTitle("Viewing " + u.getUserName() + "'s photos from album '" + album.getName() + "'");
 		for (Photo p : a.getPhotos()) {
 			addPhotoToView(p);
 		}
+		changeButtonStates();
+	}
+	
+	private void changeButtonStates() {
+		boolean shouldButtonDisarm = album.getPhotoCount() <= 0;
+		buttonStartSlideshow.setDisable(shouldButtonDisarm);
+		buttonCopyPhoto.setDisable(shouldButtonDisarm);
+		buttonMovePhoto.setDisable(shouldButtonDisarm);
 	}
 	
 	@FXML
@@ -104,6 +113,7 @@ public class PhotoViewController extends SceneController {
 		Photo photo = new Photo(file);
 		album.addPhoto(photo);
 		addPhotoToView(photo);
+		changeButtonStates();
 	}
 	
 	private void addPhotoToView(Photo p) {
@@ -147,5 +157,16 @@ public class PhotoViewController extends SceneController {
 		stage.setResizable(false);
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.show();
+	}
+	
+	@FXML 
+	private void doQuit() {
+		Platform.exit();
+	}
+	
+	@FXML
+	private void doLogout() {
+		LoginViewController lvc = (LoginViewController) switchScene(Scenes.LOGIN);
+		lvc.init();
 	}
 }

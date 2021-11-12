@@ -182,6 +182,7 @@ public class AlbumViewController extends SceneController {
 			albumList.getChildren().add(loader.getRoot());
 			albumPanes.add(albumPaneController);
 		}
+		s.setTitle("Viewing " + u.getUserName() + "'s albums");
 	}
 	
 	@FXML
