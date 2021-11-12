@@ -1,29 +1,46 @@
 package controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Optional;
+
 import app.Assets;
 import app.Scenes;
 import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.Album;
+import model.Photo;
 import model.User;
 
 public class AlbumViewController extends SceneController {
@@ -36,6 +53,8 @@ public class AlbumViewController extends SceneController {
 		@FXML private Button buttonDelete;
 		@FXML private Pane paneAlbum;
 		@FXML private AnchorPane root;
+		@FXML private ImageView imageview;
+		@FXML private HBox imageViewContainer;
 		
 		private Album album;
 		private AlbumViewController parentController;
@@ -49,18 +68,22 @@ public class AlbumViewController extends SceneController {
 			playScaleAnimation();
 			
 			for (Node n : paneAlbum.getChildren()) {
-				n.setVisible(false);
+				if (!(n instanceof HBox))
+					n.setVisible(false);
 			}
 			paneAlbum.hoverProperty().addListener((observable, oldValue, newValue) -> {
 				if (newValue) {
-					paneAlbum.setStyle("-fx-background-color: rgba(125,125,125," + HOVER_OPACITY + ");"
-							         + "-fx-cursor: hand;"
-							         + "-fx-border-color: black");
+					paneAlbum.setStyle("-fx-cursor: hand;"
+							         + "-fx-border-color: black;");
+					imageViewContainer.setOpacity(.1);
 				} else {
-					paneAlbum.setStyle("-fx-background-color: rgba(125,125,125," + 1 + ")");
+					imageViewContainer.setStyle("-fx-background-color: black;"
+							                  + "-fx-border-color: black;");
+					imageViewContainer.setOpacity(1);
 				}
 				for (Node n : paneAlbum.getChildren()) {
-					n.setVisible(newValue);
+					if (!(n instanceof HBox))
+						n.setVisible(newValue);
 				}
 				labelPhotoCount.setText(Integer.toString(album.getPhotoCount()) + " Photos");
 			});
@@ -73,6 +96,12 @@ public class AlbumViewController extends SceneController {
 				}
 			});
 			labelDates.setText("");
+			
+			if (album.getPhotoCount() > 0) {
+				imageview.setImage(new Image("file:" + album.getPhotos().get(0).getPath()));
+			} else {
+				paneAlbum.setStyle("-fx-background-color: rgba(125,125,125,1)");
+			}
 		}
 		
 		@FXML
@@ -120,11 +149,13 @@ public class AlbumViewController extends SceneController {
 	@FXML private ScrollPane scrollpane;
 	@FXML private ComboBox<String> comboFilter;
 	@FXML private TextField textboxSearch;
+	@FXML private AnchorPane paneDateRange;
+	@FXML private DatePicker datePickerStartDate;
+	@FXML private DatePicker datePickerEndDate;
 	
 	//private Stage stage;
 	private User user;
 	private ArrayList<AlbumPaneController> albumPanes;
-	//private final int MAX_NAME_LENGTH = 20;
 	
 	public void init(Stage s, User u) {
 		//this.stage = s;
@@ -153,9 +184,11 @@ public class AlbumViewController extends SceneController {
 		}
 	}
 	
-	public void requestAlbumOpen(Album a) {
-		PhotoViewController pvc = (PhotoViewController) switchScene(Scenes.PHOTO_VIEW);
-		pvc.init(user, a);
+	@FXML
+	private void updateSearchBar(ActionEvent e) {
+		boolean isDate = comboFilter.getValue().equals("Sort by: Date");
+		paneDateRange.setVisible(isDate);
+		textboxSearch.setVisible(!isDate);
 	}
 	
 	@FXML
@@ -173,15 +206,13 @@ public class AlbumViewController extends SceneController {
 	
 	@FXML
 	private void logout(ActionEvent e) {
-		/* TODO: go back to login screen */
+		LoginViewController lvc = (LoginViewController) switchScene(Scenes.LOGIN);
+		lvc.init(s);
 	}
 	
-	private void searchAlbums(String name) {
-		for (AlbumPaneController apc : albumPanes) {
-			if (!apc.getAlbum().getName().contains(name)) {
-				apc.setVisible(false);
-			}
-		}
+	@FXML
+	private void doQuit(ActionEvent e) {
+		Platform.exit();
 	}
 
 	@FXML
@@ -199,6 +230,14 @@ public class AlbumViewController extends SceneController {
 		scrollpane.setVvalue(1);
 	}
 	
+	private void searchAlbums(String name) {
+		for (AlbumPaneController apc : albumPanes) {
+			if (!apc.getAlbum().getName().contains(name)) {
+				apc.setVisible(false);
+			}
+		}
+	}
+	
 	private boolean duplicateNameFound(String name) {
 		for (AlbumPaneController apc : albumPanes) {
 			if (apc.getAlbum().getName().equals(name)) {
@@ -207,6 +246,11 @@ public class AlbumViewController extends SceneController {
 			}
 		}
 		return false;
+	}
+	
+	public void requestAlbumOpen(Album a) {
+		PhotoViewController pvc = (PhotoViewController) switchScene(Scenes.PHOTO_VIEW);
+		pvc.init(user, a);
 	}
 	
 	public String editAlbumName(String oldName) {

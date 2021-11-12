@@ -12,22 +12,21 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PhotoViewController">
+<AnchorPane stylesheets="@/view/edit_button_background.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PhotoViewController">
    <children>
       <MenuBar prefHeight="26.0" prefWidth="827.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <menus>
             <Menu mnemonicParsing="false" text="File">
                <items>
-                  <MenuItem fx:id="buttonNewPhoto" onAction="#addPhoto" mnemonicParsing="false" text="New Photo" />
+                  <MenuItem fx:id="buttonNewPhoto" mnemonicParsing="false" onAction="#addPhoto" text="New Photo" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="buttonCloseAlbum" onAction="#closeAlbum" mnemonicParsing="false" text="Close Album" />
+                  <MenuItem fx:id="buttonCloseAlbum" mnemonicParsing="false" onAction="#closeAlbum" text="Close Album" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="buttonQuit" mnemonicParsing="false" text="Quit" />
                </items>
@@ -38,20 +37,21 @@
                   <MenuItem fx:id="buttonMovePhoto" mnemonicParsing="false" text="Move to" />
                </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="View">
-               <items>
-                  <MenuItem fx:id="buttonStartSlideshow" onAction="#startSlideShow" mnemonicParsing="false" text="Start Slideshow" />
-               </items>
-            </Menu>
             <Menu mnemonicParsing="false" text="User">
                <items>
                   <MenuItem fx:id="buttonLogout" mnemonicParsing="false" text="Logout" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="View">
+               <items>
+                  <MenuItem fx:id="buttonStartSlideshow" mnemonicParsing="false" onAction="#startSlideShow" text="Start Slideshow" />
                </items>
             </Menu>
          </menus>
       </MenuBar>
       <SplitPane dividerPositions="0.5" layoutX="6.0" layoutY="70.0" prefHeight="510.0" prefWidth="787.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="70.0">
         <items>
+		  <!-- TILEPANE OF PHOTOS -->
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="538.0" prefWidth="390.0">
                <children>
                   <ScrollPane fx:id="scrollpane" prefHeight="532.0" prefWidth="390.0">
@@ -62,6 +62,7 @@
                   </ScrollPane>
                </children>
             </AnchorPane>
+		  <!-- MAIN DISPLAY -->
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="100.0">
@@ -70,7 +71,7 @@
                         </ImageView>
                      </children>
                   </HBox>
-                  <Label fx:id="labelImageCaption" layoutX="81.0" layoutY="36.0" prefHeight="35.0" prefWidth="227.0" text="Image caption/name" textAlignment="CENTER">
+                  <Label fx:id="labelImageCaption" alignment="CENTER" layoutX="81.0" layoutY="36.0" prefHeight="35.0" prefWidth="227.0" text="Image caption/name" textAlignment="CENTER">
                      <font>
                         <Font name="Nirmala UI Semilight" size="24.0" />
                      </font>
@@ -80,7 +81,7 @@
                         <Font name="Nirmala UI Semilight" size="18.0" />
                      </font>
                   </Label>
-                  <Button fx:id="buttonDelete" layoutX="349.0" layoutY="-1.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                  <Button fx:id="buttonDelete" styleClass="deleteButton" layoutX="349.0" layoutY="-1.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                   <ListView fx:id="listviewTags" layoutX="73.0" layoutY="396.0" prefHeight="62.0" prefWidth="241.0" />
                   <Button fx:id="buttonAddToList" layoutX="73.0" layoutY="464.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="60.0" text="Add">
                      <font>

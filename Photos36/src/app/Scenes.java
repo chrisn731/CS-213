@@ -6,7 +6,6 @@ public enum Scenes implements Loadable {
 	ALBUM_VIEW("/view/AlbumView.fxml"),
 	PHOTO_VIEW("/view/PhotoView.fxml");
 	
-	
 	private final String filePath;
 	
 	Scenes(final String filePath) {
