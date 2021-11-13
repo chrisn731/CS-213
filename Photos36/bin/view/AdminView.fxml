@@ -11,7 +11,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="453.0" prefWidth="608.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AdminViewController">
    <children>
-      <Text layoutX="185.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Admin Access" textAlignment="CENTER" AnchorPane.leftAnchor="185.0" AnchorPane.rightAnchor="184.30859375">
+      <Text layoutX="185.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Admin Panel" textAlignment="CENTER" AnchorPane.leftAnchor="185.0" AnchorPane.rightAnchor="184.30859375">
          <font>
             <Font name="Nirmala UI Semilight" size="40.0" />
          </font>

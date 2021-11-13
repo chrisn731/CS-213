@@ -2,12 +2,17 @@ package model;
 
 import java.io.File;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import com.sun.jdi.LongValue;
 
 public class Photo implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -17,21 +22,20 @@ public class Photo implements Serializable {
 	private String filePath = null;
 	private String caption = "";
 	
-	public Photo() {
-		this.caption = "hey";
-	}
-	
-	public Photo(String caption) {
-		this.caption = (caption == null) ? "" : caption;
-	}
-	
 	public Photo(File f) {
-		this();
+		this.caption = f.getName().substring(0, f.getName().lastIndexOf('.'));
 		filePath = f.toString();
+		date = Instant.ofEpochMilli(f.lastModified()).atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
 	public String getCaption() {
 		return caption;
+	}
+	
+	public void setCaption(String caption) {
+		if (caption == null || caption.isBlank())
+			return;
+		this.caption = caption;
 	}
 	
 	public Iterator<String> getTagKeys() {
@@ -64,8 +68,8 @@ public class Photo implements Serializable {
 		return filePath;
 	}
 	
-	public LocalDate getDate() {
-		return date;
+	public String getDateAsString() {
+		return date.format(DateTimeFormatter.ofPattern("MM/dd/uuuu"));
 	}
 	
 	/*

@@ -2,15 +2,18 @@ package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String username;
 	private ArrayList<Album> albums;
+	private ArrayList<String> tagNames;
 	
 	public User(String name) {
 		username = name;
 		albums = new ArrayList<Album>();
+		tagNames = new ArrayList<String>(Arrays.asList("location", "person"));
 	}
 
 	public String getUserName() {
@@ -31,6 +34,15 @@ public class User implements Serializable {
 	
 	public ArrayList<Album> getAlbums() {
 		return albums;
+	}
+	
+	public void addTagName(String tag) {
+		if (!tagNames.contains(tag))
+			tagNames.add(tag);
+	}
+	
+	public ArrayList<String> getTagNames() {
+		return tagNames;
 	}
 	
 	@Override

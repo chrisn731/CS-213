@@ -1,10 +1,16 @@
 package controller;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+
 import app.Assets;
 import app.Scenes;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -52,6 +58,7 @@ public class PhotoViewController extends SceneController {
 					if (click.getClickCount() == 1) {
 						parentController.setMainDisplay(photo);
 					}
+					parentController.setSelectedItem(photo);
 				}
 			});
 			
@@ -61,6 +68,46 @@ public class PhotoViewController extends SceneController {
 							         + "-fx-border-color: black");
 				}
 			});
+		}
+	}
+	
+	public static class TagController { 
+		@FXML
+		private ComboBox<String> comboTagNames;
+		
+		@FXML
+		private TextField textboxTagValues;
+		
+		@FXML
+		private Button buttonApply;
+		
+		@FXML
+		private Button buttonDone;
+		
+		private Stage stage;
+		private User user;
+		private Photo photo;
+		
+		public void init(Stage s, User u, Photo p) {
+			stage = s;
+			user = u;
+			photo = p;
+			comboTagNames.getItems().addAll(u.getTagNames());
+		}
+		
+		@FXML
+		private void applyTags() {
+			String tag = comboTagNames.getValue();
+			if (!tag.isBlank() && !user.getTagNames().contains(tag)) {
+				comboTagNames.getItems().add(comboTagNames.getValue());
+				user.getTagNames().add(tag);
+			}
+			photo.addTagPair(tag, textboxTagValues.getText());
+		}
+		
+		@FXML
+		private void doDone() {
+			stage.close();
 		}
 	}
 	
@@ -78,14 +125,15 @@ public class PhotoViewController extends SceneController {
 	@FXML private Label labelImageDate;
 	@FXML private Button buttonDelete;
 	@FXML private ListView<String> listviewTags;
-	@FXML private Button buttonAddToList;
-	@FXML private Button buttonDeleteFromList;
+	@FXML private Button buttonAddTag;
+	@FXML private Button buttonDeleteTag;
 	@FXML private TextField textboxSearch;
 	@FXML private DatePicker datepicker;
 	@FXML private ComboBox<String> comboSearchFilter;
 	
 	private User user;
 	private Album album;
+	private Photo selectedPhoto;
 	
 	public void init(User u, Album a) {
 		this.user = u;
@@ -96,6 +144,10 @@ public class PhotoViewController extends SceneController {
 			addPhotoToView(p);
 		}
 		changeButtonStates();
+		if (a.getPhotoCount() > 0) {
+			setMainDisplay(a.getPhotos().get(0));
+			selectedPhoto = a.getPhotos().get(0);
+		}
 	}
 	
 	private void changeButtonStates() {
@@ -126,6 +178,37 @@ public class PhotoViewController extends SceneController {
 	public void setMainDisplay(Photo p) {
 		mainDisplay.setImage(new Image("file:" + p.getPath(), true));
 		labelImageCaption.setText(p.getCaption());
+		ObservableList<String> tags = FXCollections.observableArrayList();
+		String listItem;
+		for (Iterator<String> i = p.getTagKeys(); i.hasNext(); ) {
+			String key = i.next();
+			listItem = key + ": ";
+			for (Iterator<String> j = p.getTagValues(key); j.hasNext(); ) {
+				listItem += j.next() + (j.hasNext() ? ", " : "");
+			}
+			tags.add(listItem);
+		}
+		listviewTags.setItems(tags);
+		labelImageDate.setText(p.getDateAsString());
+	}
+	
+	public void setSelectedItem(Photo p) {
+		selectedPhoto = p;
+	}
+	
+	@FXML 
+	private void addTags() {
+		Stage stage = new Stage();
+		FXMLLoader loader = loadAsset(Assets.TAGS);
+		TagController tc = loader.getController();
+		Scene tagScene = new Scene(loader.getRoot());
+		tc.init(stage, user, selectedPhoto);
+		stage.setScene(tagScene);
+		stage.setTitle("");
+		stage.setResizable(false);
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.showAndWait();
+		setMainDisplay(selectedPhoto);
 	}
 	
 	@FXML
