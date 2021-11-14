@@ -1,6 +1,11 @@
 package controller;
 
+/**
+ * @author Michael Nelli
+ * @author Christopher Naporlee
+ */
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -200,7 +205,7 @@ public class PhotoViewController extends SceneController {
 	}
 	
 	private void addPhotoToView(Photo p) {
-		FXMLLoader loader = loadAsset(Assets.PHOTO_PANE);
+		FXMLLoader loader = loadAsset(Assets.PHOTO_PANE_PHOTO_VIEW);
 		PhotoPaneController ppc = (PhotoPaneController) loader.getController();
 		Node root = loader.getRoot();
 		ppc.init(this, p, root);
@@ -256,7 +261,7 @@ public class PhotoViewController extends SceneController {
 	@FXML
 	private void closeAlbum() {
 		AlbumViewController avc = (AlbumViewController) switchScene(Scenes.ALBUM_VIEW);
-		avc.init(s, user);
+		avc.init(user);
 	}
 	
 	private File invokeFileChooser() {

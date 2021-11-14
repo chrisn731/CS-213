@@ -68,6 +68,10 @@ public class Photo implements Serializable {
 		return filePath;
 	}
 	
+	public LocalDate getLocalDate() {
+		return date;
+	}
+	
 	public String getDateAsString() {
 		return date.format(DateTimeFormatter.ofPattern("MM/dd/uuuu"));
 	}

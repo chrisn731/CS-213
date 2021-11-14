@@ -104,7 +104,7 @@ public class LoginViewController extends SceneController {
 	 */
 	private void loginNormal(String input) {
 		AlbumViewController avc = (AlbumViewController) switchScene(Scenes.ALBUM_VIEW);
-		avc.init(s, Admin.getUserByName(input));
+		avc.init(Admin.getUserByName(input));
 	}
 
 	/**

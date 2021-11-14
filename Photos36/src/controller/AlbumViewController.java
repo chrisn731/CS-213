@@ -2,6 +2,7 @@ package controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import app.Assets;
 import app.Scenes;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,6 +24,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -58,7 +61,7 @@ public class AlbumViewController extends SceneController {
 		
 		private Album album;
 		private AlbumViewController parentController;
-		private final double HOVER_OPACITY = .4;
+		private final double HOVER_OPACITY = .1;
 		
 		public void init(Album a, AlbumViewController avc) {
 			album = a;
@@ -75,7 +78,7 @@ public class AlbumViewController extends SceneController {
 				if (newValue) {
 					paneAlbum.setStyle("-fx-cursor: hand;"
 							         + "-fx-border-color: black;");
-					imageViewContainer.setOpacity(.1);
+					imageViewContainer.setOpacity(HOVER_OPACITY);
 				} else {
 					imageViewContainer.setStyle("-fx-background-color: black;"
 							                  + "-fx-border-color: black;");
@@ -134,9 +137,21 @@ public class AlbumViewController extends SceneController {
 		public Album getAlbum() {
 			return album;
 		}
+	}
+	
+	public static class PhotoPaneController {
+		@FXML
+		private ImageView imageview;
 		
-		public void setVisible(boolean b) {
-			root.setVisible(b);
+		@FXML
+		private Label labelCaption;
+		
+		private Photo photo;
+		
+		private void init(Photo p) {
+			photo = p;
+			imageview.setImage(new Image("file:" + p.getPath(), true));
+			labelCaption.setText(p.getCaption());
 		}
 	}
 	
@@ -144,7 +159,7 @@ public class AlbumViewController extends SceneController {
 	@FXML private MenuItem buttonNewAlbumFromSearch;
 	@FXML private MenuItem buttonQuit;
 	@FXML private MenuItem buttonDelete;
-	@FXML private MenuItem buttunLogout;
+	@FXML private MenuItem buttonLogout;
 	@FXML private TilePane albumList;
 	@FXML private ScrollPane scrollpane;
 	@FXML private ComboBox<String> comboFilter;
@@ -153,36 +168,87 @@ public class AlbumViewController extends SceneController {
 	@FXML private DatePicker datePickerStartDate;
 	@FXML private DatePicker datePickerEndDate;
 	
-	//private Stage stage;
 	private User user;
-	private ArrayList<AlbumPaneController> albumPanes;
+	private ArrayList<AlbumPaneController> albumPaneControllers;
+	private ObservableList<Node> photoPanes;
+	private ObservableList<Node> albumPanes;
+	private boolean showPhotos = true;
 	
-	public void init(Stage s, User u) {
-		//this.stage = s;
+	public void init(User u) {
 		this.user = u;
-		albumPanes = new ArrayList<AlbumPaneController>();
-		comboFilter.setItems(FXCollections.observableArrayList("Sort by: None", "Sort by: Date", "Sort by: Tags"));
+		albumPaneControllers = new ArrayList<AlbumPaneController>();
+		albumPanes = FXCollections.observableArrayList();
+		photoPanes = FXCollections.observableArrayList();
 		
-		buttonNewAlbumFromSearch.setDisable(true);
-		textboxSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue.trim().equals("")) {
-		    	buttonNewAlbumFromSearch.setDisable(true);
-		    } else {
-		    	buttonNewAlbumFromSearch.setDisable(false);
-		    	searchAlbums(newValue);
-		    }
-		});
+		comboFilter.setItems(FXCollections.observableArrayList("Sort by: Date", "Sort by: Tags"));
+		comboFilter.getSelectionModel().select(1);
 		
-		//scrollpane.vvalueProperty().bind(albumList.heightProperty());
+		setListeners();
+		setListStateToPhotos(false);
 		
 		for (Album a : u.getAlbums()) {
 			FXMLLoader loader = loadAsset(Assets.ALBUM_PANE);
 			AlbumPaneController albumPaneController = loader.getController();
 			albumPaneController.init(a, this);
-			albumList.getChildren().add(loader.getRoot());
-			albumPanes.add(albumPaneController);
+			albumPanes.add(loader.getRoot());
+			albumPaneControllers.add(albumPaneController);
 		}
-		s.setTitle("Viewing " + u.getUserName() + "'s albums");
+		
+		s.setTitle("Viewing " + u.getUserName() + "'s Albums");
+		comboFilter.requestFocus();
+		buttonNewAlbumFromSearch.setDisable(true);
+	}
+	
+	private void setListeners() {
+		textboxSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue.trim().equals("") || !newValue.contains("=") || (newValue.charAt(newValue.length() - 1) == '=')) {
+		    	buttonNewAlbumFromSearch.setDisable(true);
+		    	setListStateToPhotos(false);
+			} else {
+		    	buttonNewAlbumFromSearch.setDisable(false);
+		    	if (newValue.contains("=")) {
+		    		searchAlbumsByTag();
+		    	}
+		    }
+		});
+		
+		datePickerStartDate.valueProperty().addListener((observable, oldValue, newValue) -> {
+			LocalDate endDate = datePickerEndDate.getValue();
+			if (newValue == null || endDate == null)
+				return;
+			if (newValue.compareTo(endDate) > 0) {
+				showPopup("Error", null, "Start date must be less than or equal to the end date.", AlertType.WARNING);
+				datePickerStartDate.setValue(null);
+			} else { 
+				searchAlbumsByDate();
+			}
+		});
+		
+		datePickerEndDate.valueProperty().addListener((observable, oldValue, newValue) -> {
+			LocalDate startDate = datePickerStartDate.getValue();
+			if (newValue == null || startDate == null)
+				return;
+			if (newValue.compareTo(startDate) < 0) {
+				showPopup("Error", null, "End date must be greater than or equal to the start date.", AlertType.WARNING);
+				datePickerEndDate.setValue(null);
+			} else {
+				searchAlbumsByDate();
+			}
+		});
+	}
+	
+	private void setListStateToPhotos(boolean showPhotos) {
+		if (this.showPhotos == showPhotos)
+			return;
+		
+		if (showPhotos) {
+			Bindings.unbindContentBidirectional(albumList.getChildren(), albumPanes);
+			Bindings.bindContentBidirectional(albumList.getChildren(), photoPanes);
+		} else {
+			Bindings.unbindContentBidirectional(albumList.getChildren(), photoPanes);
+			Bindings.bindContentBidirectional(albumList.getChildren(), albumPanes);
+		}
+		this.showPhotos = showPhotos;
 	}
 	
 	@FXML
@@ -226,21 +292,47 @@ public class AlbumViewController extends SceneController {
 		Album album = new Album(name);
 		user.addAlbum(album);
 		albumPaneController.init(album, this);
-		albumList.getChildren().add(loader.getRoot());
-		albumPanes.add(albumPaneController);
+		setListStateToPhotos(false);
+		albumPanes.add(loader.getRoot());
+		albumPaneControllers.add(albumPaneController);
 		scrollpane.setVvalue(1);
 	}
 	
-	private void searchAlbums(String name) {
-		for (AlbumPaneController apc : albumPanes) {
-			if (!apc.getAlbum().getName().contains(name)) {
-				apc.setVisible(false);
+	private void searchAlbumsByTag() {
+		String key = textboxSearch.getText().substring(0, textboxSearch.getText().indexOf('='));
+		String val = textboxSearch.getText().substring(textboxSearch.getText().indexOf('=')).replace("=", "");
+		photoPanes.clear();
+		setListStateToPhotos(true);
+		for (AlbumPaneController apc : albumPaneControllers) {
+			for (Photo p : apc.getAlbum().getPhotos()) {
+				if (p.tagPairExists(key, val)) {
+					FXMLLoader loader = loadAsset(Assets.PHOTO_PANE_ALBUM_VIEW);
+					PhotoPaneController ppc = loader.getController();
+					ppc.init(p);
+					photoPanes.add(loader.getRoot());
+				}
+			}
+		}
+	}
+	
+	public void searchAlbumsByDate() {
+		photoPanes.clear();
+		setListStateToPhotos(true);
+		for (AlbumPaneController apc : albumPaneControllers) {
+			for (Photo p : apc.getAlbum().getPhotos()) {
+				LocalDate photoDate = p.getLocalDate();
+				if (photoDate.compareTo(datePickerStartDate.getValue()) >= 0 && photoDate.compareTo(datePickerEndDate.getValue()) <= 0) {
+					FXMLLoader loader = loadAsset(Assets.PHOTO_PANE_ALBUM_VIEW);
+					PhotoPaneController ppc = loader.getController();
+					ppc.init(p);
+					photoPanes.add(loader.getRoot());
+				}
 			}
 		}
 	}
 	
 	private boolean duplicateNameFound(String name) {
-		for (AlbumPaneController apc : albumPanes) {
+		for (AlbumPaneController apc : albumPaneControllers) {
 			if (apc.getAlbum().getName().equals(name)) {
 				showPopup("Error", null, "This album name already exists", AlertType.WARNING);
 				return true;
@@ -265,8 +357,8 @@ public class AlbumViewController extends SceneController {
 		if (!showPopup("Delete Album", null, "Are you sure you want to delete " + apc.getAlbum().getName() + "?", AlertType.CONFIRMATION))
 			return;
 		user.removeAlbum(apc.getAlbum());
-		albumList.getChildren().remove(root);
-		albumPanes.remove(apc);
+		albumPanes.remove(root);
+		albumPaneControllers.remove(apc);
 	}
 	
 	public void setVval() {

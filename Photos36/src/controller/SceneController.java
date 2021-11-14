@@ -29,8 +29,7 @@ public abstract class SceneController {
 	}
 	
 	protected FXMLLoader loadAsset(Loadable asset) {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource(asset.getPath()));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(asset.getPath()));
 		try {
 			loader.load();
 		} catch (IOException e) {

@@ -15,4 +15,8 @@ public enum Scenes implements Loadable {
 	public String getPath() {
 		return filePath;
 	}
+	
+	public Object getController() {
+		return null;
+	}
 }

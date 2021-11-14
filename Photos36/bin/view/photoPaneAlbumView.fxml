@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="175.0" prefWidth="150.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AlbumViewController$PhotoPaneController" >
+	<children>
+		<ImageView fx:id="imageview" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" AnchorPane.bottomAnchor="-165.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+		<Label fx:id="labelCaption" layoutX="7.0" layoutY="152.0" prefHeight="18.0" prefWidth="137.0" text="OMG OMG" alignment="CENTER" textAlignment="CENTER">
+		   <font>
+			  <Font name="Nirmala UI" size="12.0" />
+		   </font>
+		</Label>
+	</children>
+</AnchorPane>                              
