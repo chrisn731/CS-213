@@ -20,17 +20,27 @@ public class Album implements Serializable {
 		return photos;
 	}
 	
-	public boolean addPhoto(Photo p) {
+	public Photo getPhotoByFile(String filePath) {
+		for (Photo photo : photos) {
+			if (photo.getPath().equals(filePath))
+				return photo;
+		}
+		return null;
+	}
+	
+	public boolean addPhoto(Photo p, User u) {
 		if (photos.contains(p))
 			return false;
 		photos.add(p);
 		numPhotos++;
+		p.incrementAlbumRefs();
 		return true;
 	}
 	
 	public void removePhoto(Photo p) {
 		photos.remove(p);
 		numPhotos--;
+		p.decrementAlbumRefs();
 	}
 	
 	public int getPhotoCount() {

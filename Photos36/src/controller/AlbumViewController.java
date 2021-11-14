@@ -153,6 +153,10 @@ public class AlbumViewController extends SceneController {
 			imageview.setImage(new Image("file:" + p.getPath(), true));
 			labelCaption.setText(p.getCaption());
 		}
+		
+		private Photo getPhoto() {
+			return photo;
+		}
 	}
 	
 	@FXML private MenuItem buttonNewAlbum;
@@ -170,6 +174,7 @@ public class AlbumViewController extends SceneController {
 	
 	private User user;
 	private ArrayList<AlbumPaneController> albumPaneControllers;
+	private ArrayList<PhotoPaneController> photoPaneControllers;
 	private ObservableList<Node> photoPanes;
 	private ObservableList<Node> albumPanes;
 	private boolean showPhotos = true;
@@ -177,6 +182,7 @@ public class AlbumViewController extends SceneController {
 	public void init(User u) {
 		this.user = u;
 		albumPaneControllers = new ArrayList<AlbumPaneController>();
+		photoPaneControllers = new ArrayList<PhotoPaneController>();
 		albumPanes = FXCollections.observableArrayList();
 		photoPanes = FXCollections.observableArrayList();
 		
@@ -242,6 +248,8 @@ public class AlbumViewController extends SceneController {
 			return;
 		
 		if (showPhotos) {
+			photoPanes.clear();
+			photoPaneControllers.clear();
 			Bindings.unbindContentBidirectional(albumList.getChildren(), albumPanes);
 			Bindings.bindContentBidirectional(albumList.getChildren(), photoPanes);
 		} else {
@@ -254,8 +262,15 @@ public class AlbumViewController extends SceneController {
 	@FXML
 	private void updateSearchBar(ActionEvent e) {
 		boolean isDate = comboFilter.getValue().equals("Sort by: Date");
+		if (isDate) {
+			datePickerStartDate.setValue(null);
+			datePickerEndDate.setValue(null);
+		} else {
+			textboxSearch.clear();
+		}
 		paneDateRange.setVisible(isDate);
 		textboxSearch.setVisible(!isDate);
+		setListStateToPhotos(false);
 	}
 	
 	@FXML
@@ -268,7 +283,12 @@ public class AlbumViewController extends SceneController {
 	
 	@FXML
 	private void createAlbumFromSearch(ActionEvent e) {
-		 
+		 Album album = createAlbum();
+		 if (album == null)
+			 return;
+		 for (PhotoPaneController ppc : photoPaneControllers) {
+			 album.addPhoto(ppc.getPhoto(), user);
+		 }
 	}
 	
 	@FXML
@@ -283,25 +303,25 @@ public class AlbumViewController extends SceneController {
 	}
 
 	@FXML
-	private void createAlbum() {
+	private Album createAlbum() {
 		String name = getUserInput("New Album", null, "Enter name: ", null, true);
 		if (name == null || duplicateNameFound(name))
-			return;
+			return null;
 		FXMLLoader loader = loadAsset(Assets.ALBUM_PANE);
 		AlbumPaneController albumPaneController = loader.getController();
 		Album album = new Album(name);
 		user.addAlbum(album);
 		albumPaneController.init(album, this);
-		setListStateToPhotos(false);
 		albumPanes.add(loader.getRoot());
 		albumPaneControllers.add(albumPaneController);
+		setListStateToPhotos(false);
 		scrollpane.setVvalue(1);
+		return album;
 	}
 	
 	private void searchAlbumsByTag() {
 		String key = textboxSearch.getText().substring(0, textboxSearch.getText().indexOf('='));
 		String val = textboxSearch.getText().substring(textboxSearch.getText().indexOf('=')).replace("=", "");
-		photoPanes.clear();
 		setListStateToPhotos(true);
 		for (AlbumPaneController apc : albumPaneControllers) {
 			for (Photo p : apc.getAlbum().getPhotos()) {
@@ -310,13 +330,20 @@ public class AlbumViewController extends SceneController {
 					PhotoPaneController ppc = loader.getController();
 					ppc.init(p);
 					photoPanes.add(loader.getRoot());
+					photoPaneControllers.add(ppc);
 				}
 			}
 		}
 	}
 	
+	/*
+	 * PROBLEM: we are looping every album and showing the matches from that album. This means that if a photo exists within x albums, we add it 
+	 * 			x times. Need a way to only add the unique ones.
+	 * SOLUTIONS: 
+	 * 		(1) user stores a uniquePhotos list
+	 * 		(2) this function builds up a "visited" list where if we match the tag but already added this, don't add it again
+	 */
 	public void searchAlbumsByDate() {
-		photoPanes.clear();
 		setListStateToPhotos(true);
 		for (AlbumPaneController apc : albumPaneControllers) {
 			for (Photo p : apc.getAlbum().getPhotos()) {
@@ -326,6 +353,7 @@ public class AlbumViewController extends SceneController {
 					PhotoPaneController ppc = loader.getController();
 					ppc.init(p);
 					photoPanes.add(loader.getRoot());
+					photoPaneControllers.add(ppc);
 				}
 			}
 		}

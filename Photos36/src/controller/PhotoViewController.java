@@ -196,12 +196,23 @@ public class PhotoViewController extends SceneController {
 	}
 	
 	@FXML
+	/* TODO: either add a new photo or add a copy (if found in another album) -- this works rn
+	 * 		 also, if the photo exists within the album this controller stores, don't add it to the album or to the view
+	 * 		 (album.addPhoto() handles this case and won't add a duplicate, but it's still added to photoview twice)
+	 */
 	private void addPhoto() {
 		File file = invokeFileChooser();
 		if (file == null)
 			return;
-		Photo photo = new Photo(file);
-		album.addPhoto(photo);
+		Photo photo = null;
+		for (Album album : user.getAlbums()) {
+			photo = album.getPhotoByFile(file.toString());
+			if (photo != null)
+				break;
+		}
+		if (photo == null)
+			photo = new Photo(file);
+		album.addPhoto(photo, user);
 		addPhotoToView(photo);
 		changeButtonStates();
 	}
@@ -339,7 +350,7 @@ public class PhotoViewController extends SceneController {
 	private void movePhoto() { 
 		Optional<String> result = promptPhotoMovement(false);
 		if (result.isPresent()) {
-			user.getAlbum(result.get()).addPhoto(selectedController.getPhoto());
+			user.getAlbum(result.get()).addPhoto(selectedController.getPhoto(), user);
 			processPhotoDeletion();
 		}
 	}
@@ -348,7 +359,7 @@ public class PhotoViewController extends SceneController {
 	private void copyPhoto() {
 		Optional<String> result = promptPhotoMovement(true);
 		if (result.isPresent())
-			user.getAlbum(result.get()).addPhoto(selectedController.getPhoto());
+			user.getAlbum(result.get()).addPhoto(selectedController.getPhoto(), user);
 	}
 	
 	@FXML 
