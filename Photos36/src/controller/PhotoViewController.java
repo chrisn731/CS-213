@@ -8,6 +8,7 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Optional;
 
 import app.Assets;
 import app.Scenes;
@@ -20,6 +21,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -291,12 +293,16 @@ public class PhotoViewController extends SceneController {
 	@FXML
 	private void deletePhoto() {
 		boolean approval = showPopup(
-				"Delete Album", null, 
-				"Are you sure you want to delete this photo?", 
-				AlertType.CONFIRMATION
+			"Delete Album", null, 
+			"Are you sure you want to delete this photo?", 
+			AlertType.CONFIRMATION
 		);
 		if (!approval)
 			return;
+		processPhotoDeletion();
+	}
+	
+	private void processPhotoDeletion() {
 		photoList.getChildren().remove(selectedController.getRoot());
 		album.removePhoto(selectedController.getPhoto());
 		
@@ -309,6 +315,40 @@ public class PhotoViewController extends SceneController {
 				photoIndex -= 1;
 			setMainDisplay(photoPanes.get(photoIndex));
 		}
+	}
+
+	private Optional<String> promptPhotoMovement(boolean copy) {
+		ArrayList<String> userAlbumNames = new ArrayList<>();
+		for (Album a : user.getAlbums())
+			if (a.getName() != album.getName())
+				userAlbumNames.add(a.getName());
+		ChoiceDialog<String> cd = new ChoiceDialog<>(null, userAlbumNames);
+		cd.setHeaderText(
+			(copy ? "Copy" : "Move") + 
+			" to which album?"
+		);
+		cd.setContentText(
+			"Select album to " +
+			(copy ? "copy" : "move") +
+			"to: "
+		);
+		return cd.showAndWait();
+	}
+	
+	@FXML
+	private void movePhoto() { 
+		Optional<String> result = promptPhotoMovement(false);
+		if (result.isPresent()) {
+			user.getAlbum(result.get()).addPhoto(selectedController.getPhoto());
+			processPhotoDeletion();
+		}
+	}
+	
+	@FXML
+	private void copyPhoto() {
+		Optional<String> result = promptPhotoMovement(true);
+		if (result.isPresent())
+			user.getAlbum(result.get()).addPhoto(selectedController.getPhoto());
 	}
 	
 	@FXML 

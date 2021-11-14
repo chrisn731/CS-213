@@ -36,6 +36,13 @@ public class User implements Serializable {
 		return albums;
 	}
 	
+	public Album getAlbum(String albumName) {
+		for (Album a : getAlbums())
+			if (a.getName().equals(albumName))
+				return a;
+		return null;
+	}
+	
 	public void addTagName(String tag) {
 		if (!tagNames.contains(tag))
 			tagNames.add(tag);
