@@ -48,6 +48,17 @@ public class Photo implements Serializable {
 		return tagVals != null ? tagVals.iterator() : Collections.emptyIterator();
 	}
 	
+	public void removeTagPair(String tagKey, String tagVal) {
+		ArrayList<String> vals = tags.get(tagKey);
+		vals.remove(tagVal);
+		if (vals.size() == 0)
+			removeTag(tagKey);
+	}
+	
+	public void removeTag(String tagKey) {
+		tags.remove(tagKey);
+	}
+	
 	public boolean tagPairExists(String tagKey, String tagVal) {
 		ArrayList<String> tagVals = tags.get(tagKey);
 		return tagVals != null ? tagVals.contains(tagVal) : false;

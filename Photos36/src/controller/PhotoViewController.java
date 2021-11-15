@@ -88,6 +88,10 @@ public class PhotoViewController extends SceneController {
 		private Node getRoot() {
 			return root;
 		}
+		
+		private Image getImage() {
+			return imageview.getImage();
+		}
 	}
 	
 	public static class TagController { 
@@ -204,16 +208,26 @@ public class PhotoViewController extends SceneController {
 		File file = invokeFileChooser();
 		if (file == null)
 			return;
+		
 		Photo photo = null;
-		for (Album album : user.getAlbums()) {
-			photo = album.getPhotoByFile(file.toString());
-			if (photo != null)
-				break;
+		for (Album a : user.getAlbums()) {
+			if (!a.equals(album)) {
+				photo = a.getPhotoByFile(file.toString());
+				if (photo != null)
+					break;
+			}
 		}
-		if (photo == null)
+		
+		if (photo == null) {
+			System.out.println("made a new photo!");
 			photo = new Photo(file);
-		album.addPhoto(photo, user);
-		addPhotoToView(photo);
+		}
+			
+		if (album.getPhotoByFile(file.toString()) == null) {
+			album.addPhoto(photo, user);
+			addPhotoToView(photo);
+		}
+		
 		changeButtonStates();
 	}
 	
@@ -228,9 +242,12 @@ public class PhotoViewController extends SceneController {
 			setMainDisplay(ppc);
 	}
 	
-	private void setMainDisplay(Photo p) {
+	private void setMainDisplay(PhotoPaneController ppc) {
+		selectedController = ppc;
+		Photo p = ppc.getPhoto();
+		
 		enableDisplay();
-		mainDisplay.setImage(new Image("file:" + p.getPath(), true));
+		mainDisplay.setImage(ppc.getImage());
 		labelImageCaption.setText(p.getCaption());
 		labelImageDate.setText(p.getDateAsString());
 		
@@ -252,11 +269,6 @@ public class PhotoViewController extends SceneController {
 		}
 	}
 	
-	private void setMainDisplay(PhotoPaneController p) {
-		setMainDisplay(p.getPhoto());
-		selectedController = p;
-	}
-	
 	@FXML 
 	private void addTags() {
 		Stage stage = new Stage();
@@ -269,6 +281,32 @@ public class PhotoViewController extends SceneController {
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.showAndWait();
 		setMainDisplay(selectedController);
+	}
+	
+	@FXML
+	private void removeTag() {
+		ArrayList<String> tagVals = new ArrayList<>();
+		int selectedIndex = listviewTags.getSelectionModel().getSelectedIndex();
+		if (selectedIndex < 0)
+			return;
+		
+		String selectedLine = listviewTags.getSelectionModel().getSelectedItem();
+		String tagKey = selectedLine.substring(0, selectedLine.indexOf(':'));
+		Iterator<String> i = selectedController.getPhoto().getTagValues(tagKey);
+		while (i.hasNext()) {
+			tagVals.add(i.next());
+		}
+		
+		ChoiceDialog<String> cd = new ChoiceDialog<>(null, tagVals);
+		cd.setHeaderText("Tag value removal from '" + tagKey + "'");
+		cd.setContentText("Select which tag value to remove: ");
+		Optional<String> res = cd.showAndWait();
+		
+		if (res.isEmpty())
+			return;
+		selectedController.getPhoto().removeTagPair(tagKey, res.get());
+		setMainDisplay(selectedController);
+		return;
 	}
 	
 	@FXML
@@ -321,6 +359,8 @@ public class PhotoViewController extends SceneController {
 		photoPanes.remove(selectedController);
 		if (photoPanes.size() == 0) {
 			disableDisplay();
+			selectedController = null;
+			changeButtonStates();
 		} else {
 			if (photoIndex >= photoPanes.size())
 				photoIndex -= 1;
@@ -330,18 +370,31 @@ public class PhotoViewController extends SceneController {
 
 	private Optional<String> promptPhotoMovement(boolean copy) {
 		ArrayList<String> userAlbumNames = new ArrayList<>();
-		for (Album a : user.getAlbums())
-			if (a.getName() != album.getName())
+		for (Album a : user.getAlbums()) {
+			String path = selectedController.getPhoto().getPath();
+			if (a.getName() != album.getName() && a.getPhotoByFile(path) == null)
 				userAlbumNames.add(a.getName());
+		}
+		
+		if (userAlbumNames.size() == 0) {
+			showPopup(
+				(copy ? "Copy" : "Move") + " Error",
+				"", 
+				"This photo already exists in every album!",
+				AlertType.WARNING
+			);
+			return Optional.empty();
+		}
+		
 		ChoiceDialog<String> cd = new ChoiceDialog<>(null, userAlbumNames);
 		cd.setHeaderText(
 			(copy ? "Copy" : "Move") + 
 			" to which album?"
 		);
 		cd.setContentText(
-			"Select album to " +
+			"Select an album to " +
 			(copy ? "copy" : "move") +
-			"to: "
+			" to: "
 		);
 		return cd.showAndWait();
 	}

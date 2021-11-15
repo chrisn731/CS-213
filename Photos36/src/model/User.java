@@ -9,13 +9,11 @@ public class User implements Serializable {
 	private String username;
 	private ArrayList<Album> albums;
 	private ArrayList<String> tagNames;
-	private ArrayList<Photo> uniquePhotos;
 	
 	public User(String name) {
 		username = name;
 		albums = new ArrayList<Album>();
 		tagNames = new ArrayList<String>(Arrays.asList("location", "person"));
-		uniquePhotos = new ArrayList<Photo>();
 	}
 
 	public String getUserName() {
@@ -52,10 +50,6 @@ public class User implements Serializable {
 	
 	public ArrayList<String> getTagNames() {
 		return tagNames;
-	}
-	
-	public void addPhoto(Photo p) {
-		uniquePhotos.add(p);
 	}
 	
 	@Override

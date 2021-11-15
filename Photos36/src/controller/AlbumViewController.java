@@ -100,6 +100,10 @@ public class AlbumViewController extends SceneController {
 			});
 			labelDates.setText("");
 			
+			setCoverImage();
+		}
+		
+		private void setCoverImage() {
 			if (album.getPhotoCount() > 0) {
 				imageview.setImage(new Image("file:" + album.getPhotos().get(0).getPath()));
 			} else {
@@ -283,12 +287,13 @@ public class AlbumViewController extends SceneController {
 	
 	@FXML
 	private void createAlbumFromSearch(ActionEvent e) {
-		 Album album = createAlbum();
-		 if (album == null)
+		 AlbumPaneController apc = createAlbum();
+		 if (apc.getAlbum() == null)
 			 return;
 		 for (PhotoPaneController ppc : photoPaneControllers) {
-			 album.addPhoto(ppc.getPhoto(), user);
+			 apc.getAlbum().addPhoto(ppc.getPhoto(), user);
 		 }
+		 apc.setCoverImage();
 	}
 	
 	@FXML
@@ -303,7 +308,7 @@ public class AlbumViewController extends SceneController {
 	}
 
 	@FXML
-	private Album createAlbum() {
+	private AlbumPaneController createAlbum() {
 		String name = getUserInput("New Album", null, "Enter name: ", null, true);
 		if (name == null || duplicateNameFound(name))
 			return null;
@@ -316,24 +321,28 @@ public class AlbumViewController extends SceneController {
 		albumPaneControllers.add(albumPaneController);
 		setListStateToPhotos(false);
 		scrollpane.setVvalue(1);
-		return album;
+		return albumPaneController;
 	}
 	
 	private void searchAlbumsByTag() {
 		String key = textboxSearch.getText().substring(0, textboxSearch.getText().indexOf('='));
 		String val = textboxSearch.getText().substring(textboxSearch.getText().indexOf('=')).replace("=", "");
 		setListStateToPhotos(true);
-		for (AlbumPaneController apc : albumPaneControllers) {
-			for (Photo p : apc.getAlbum().getPhotos()) {
-				if (p.tagPairExists(key, val)) {
+		
+		ArrayList<Photo> visited = new ArrayList<>();
+		for (Album a : user.getAlbums()) {
+			for (Photo p : a.getPhotos()) {
+				if (p.tagPairExists(key, val) && !visited.contains(p)) {
 					FXMLLoader loader = loadAsset(Assets.PHOTO_PANE_ALBUM_VIEW);
 					PhotoPaneController ppc = loader.getController();
 					ppc.init(p);
 					photoPanes.add(loader.getRoot());
 					photoPaneControllers.add(ppc);
+					visited.add(p);
 				}
 			}
 		}
+		
 	}
 	
 	/*
@@ -345,15 +354,20 @@ public class AlbumViewController extends SceneController {
 	 */
 	public void searchAlbumsByDate() {
 		setListStateToPhotos(true);
+		
+		ArrayList<Photo> visited = new ArrayList<>();
 		for (AlbumPaneController apc : albumPaneControllers) {
 			for (Photo p : apc.getAlbum().getPhotos()) {
 				LocalDate photoDate = p.getLocalDate();
-				if (photoDate.compareTo(datePickerStartDate.getValue()) >= 0 && photoDate.compareTo(datePickerEndDate.getValue()) <= 0) {
+				if (photoDate.isAfter(datePickerStartDate.getValue()) && 
+						photoDate.isBefore(datePickerEndDate.getValue()) &&
+						!visited.contains(p)) {
 					FXMLLoader loader = loadAsset(Assets.PHOTO_PANE_ALBUM_VIEW);
 					PhotoPaneController ppc = loader.getController();
 					ppc.init(p);
 					photoPanes.add(loader.getRoot());
 					photoPaneControllers.add(ppc);
+					visited.add(p);
 				}
 			}
 		}
@@ -382,7 +396,12 @@ public class AlbumViewController extends SceneController {
 	}
 	
 	public void deleteAlbum(AlbumPaneController apc, Node root) {
-		if (!showPopup("Delete Album", null, "Are you sure you want to delete " + apc.getAlbum().getName() + "?", AlertType.CONFIRMATION))
+		boolean approval = showPopup(
+				"Delete Album",null, 
+				"Are you sure you want to delete " + apc.getAlbum().getName() + "?", 
+				AlertType.CONFIRMATION
+		);
+		if (!approval)
 			return;
 		user.removeAlbum(apc.getAlbum());
 		albumPanes.remove(root);

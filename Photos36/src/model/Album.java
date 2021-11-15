@@ -2,6 +2,8 @@ package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Album implements Serializable {
 
@@ -10,6 +12,7 @@ public class Album implements Serializable {
 	private ArrayList<Photo> photos;
 	private String name;
 	private int numPhotos;
+	Map<String, Photo> filePhotoMap = new HashMap<>();
 	
 	public Album(String name) {
 		this.name = name;
@@ -21,11 +24,7 @@ public class Album implements Serializable {
 	}
 	
 	public Photo getPhotoByFile(String filePath) {
-		for (Photo photo : photos) {
-			if (photo.getPath().equals(filePath))
-				return photo;
-		}
-		return null;
+		return filePhotoMap.get(filePath);
 	}
 	
 	public boolean addPhoto(Photo p, User u) {
@@ -34,6 +33,7 @@ public class Album implements Serializable {
 		photos.add(p);
 		numPhotos++;
 		p.incrementAlbumRefs();
+		filePhotoMap.put(p.getPath(), p);
 		return true;
 	}
 	
@@ -41,6 +41,7 @@ public class Album implements Serializable {
 		photos.remove(p);
 		numPhotos--;
 		p.decrementAlbumRefs();
+		filePhotoMap.remove(p.getPath());
 	}
 	
 	public int getPhotoCount() {
