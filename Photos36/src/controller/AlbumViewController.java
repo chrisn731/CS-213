@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -68,6 +69,8 @@ public class AlbumViewController extends SceneController {
 			parentController = avc;
 			labelAlbumName.setText(album.getName());
 			
+			paneAlbum.setCache(true);
+			paneAlbum.setCacheHint(CacheHint.SPEED);
 			playScaleAnimation();
 			
 			for (Node n : paneAlbum.getChildren()) {
@@ -105,7 +108,9 @@ public class AlbumViewController extends SceneController {
 		
 		private void setCoverImage() {
 			if (album.getPhotoCount() > 0) {
-				imageview.setImage(new Image("file:" + album.getPhotos().get(0).getPath()));
+				imageview.setCache(true);
+				imageview.setCacheHint(CacheHint.SPEED);
+				imageview.setImage(new Image("file:" + album.getPhotos().get(0).getPath(), 175, 175, true, false, true));
 			} else {
 				paneAlbum.setStyle("-fx-background-color: rgba(125,125,125,1)");
 			}
@@ -154,7 +159,7 @@ public class AlbumViewController extends SceneController {
 		
 		private void init(Photo p) {
 			photo = p;
-			imageview.setImage(new Image("file:" + p.getPath(), true));
+			imageview.setImage(new Image("file:" + p.getPath(), 300, 300, true, false, true));
 			labelCaption.setText(p.getCaption());
 		}
 		

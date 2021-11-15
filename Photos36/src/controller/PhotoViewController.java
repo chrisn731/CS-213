@@ -18,6 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -55,12 +56,18 @@ public class PhotoViewController extends SceneController {
 		private PhotoViewController parentController;
 		private Photo photo;
 		private Node root;
+		private Image thumbnailImage;
+		private Image displayImage;
 		
 		private void init(PhotoViewController pvc, Photo p, Node root) {
 			parentController = pvc;
 			photo = p;
 			this.root = root;
-			imageview.setImage(new Image("file:" + p.getPath(), true));
+			imageview.setCache(true);
+			imageview.setCacheHint(CacheHint.SPEED);
+			thumbnailImage = new Image("file:" + p.getPath(), 175.0, 175.0, true, false, true);
+			displayImage = new Image("file:" + p.getPath(), 500, 500, true, true, true);
+			imageview.setImage(thumbnailImage);
 			labelCaption.setText(p.getCaption());
 			
 			imageview.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
@@ -75,6 +82,7 @@ public class PhotoViewController extends SceneController {
 							         + "-fx-border-color: black");
 				}
 			});
+			
 		}
 		
 		private Photo getPhoto() {
@@ -90,7 +98,7 @@ public class PhotoViewController extends SceneController {
 		}
 		
 		private Image getImage() {
-			return imageview.getImage();
+			return displayImage;
 		}
 	}
 	
