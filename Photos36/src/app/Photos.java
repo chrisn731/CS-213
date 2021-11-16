@@ -1,5 +1,10 @@
 package app;
 
+/**
+ * @author Christopher Naporlee - cmn134
+ * @author Michael Nelli - mrn73
+ */
+
 import java.io.IOException;
 
 import controller.LoginViewController;
@@ -10,9 +15,16 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import model.Admin;
 
+/**
+ * Entry and launchpad class of the application.
+ */
 public class Photos extends Application {
 
 	@Override
+	/**
+	 * Launches the application. Does necessary loading data from disk and then puts
+	 * the user into the login view.
+	 */
 	public void start(Stage primaryStage) throws Exception {
 		Admin.loadFromDisk();
 	
@@ -31,6 +43,10 @@ public class Photos extends Application {
 	}
 	
 	@Override
+	/**
+	 * Application tear down routine. Called when the user presses 'Quit' at any point
+	 * or presses the 'X' on the window.
+	 */
 	public void stop() {
 		try {
 			Admin.syncToDisk();
@@ -39,6 +55,10 @@ public class Photos extends Application {
 		}
 	}
 
+	/**
+	 * Application entry point
+	 * @param args Command line arguments
+	 */
 	public static void main(String[] args) {
 		launch(args);
 	}

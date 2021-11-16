@@ -1,5 +1,13 @@
 package app;
 
+/**
+ * @author Christopher Naporlee - cmn134
+ * @author Michael Nelli - mrn73
+ */
+
+/**
+ * Interface of any scene or asset that is capable of being loaded into an FXML loader.
+ */
 public interface Loadable {
 
 	/**
@@ -7,5 +15,4 @@ public interface Loadable {
 	 * @return path
 	 */
 	String getPath();
-
 }

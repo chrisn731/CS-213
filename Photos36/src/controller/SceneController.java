@@ -87,14 +87,7 @@ public abstract class SceneController {
 		alert.setTitle(title);
 		alert.setHeaderText(header);
 		alert.setContentText(context);
-		alert.showAndWait();
-		if (alert.getResult() == null) {
-			/*
-			 * This is triggered if the user presses hard closes the popup 
-			 * window (hitting the 'X'). 
-			 */
-			return false;
-		}
-		return alert.getResult().equals(ButtonType.OK);
+		Optional<ButtonType> res = alert.showAndWait();
+		return res.isPresent() ? res.get().equals(ButtonType.OK) : false;
 	}
 }

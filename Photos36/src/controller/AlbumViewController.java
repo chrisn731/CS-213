@@ -1,14 +1,9 @@
 package controller;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Optional;
-
 import app.Assets;
 import app.Scenes;
 import javafx.animation.ScaleTransition;
@@ -22,16 +17,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert.AlertType;
@@ -40,10 +32,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.Album;
 import model.Photo;
@@ -55,8 +44,8 @@ public class AlbumViewController extends SceneController {
 		@FXML private Text labelAlbumName;
 		@FXML private Text labelPhotoCount;
 		@FXML private Text labelDates;
-		@FXML private Button buttonEdit;
-		@FXML private Button buttonDelete;
+		//@FXML private Button buttonEdit;
+		//@FXML private Button buttonDelete;
 		@FXML private Pane paneAlbum;
 		@FXML private AnchorPane root;
 		@FXML private ImageView imageview;
@@ -71,8 +60,6 @@ public class AlbumViewController extends SceneController {
 			parentController = avc;
 			labelAlbumName.setText(album.getName());
 			
-			//paneAlbum.setCache(true);
-			//paneAlbum.setCacheHint(CacheHint.SPEED);
 			playScaleAnimation();
 			
 			for (Node n : paneAlbum.getChildren()) {
@@ -110,10 +97,13 @@ public class AlbumViewController extends SceneController {
 		
 		private void setCoverImage() {
 			if (album.getPhotoCount() > 0) {
-				//imageview.setCache(true);
-				//imageview.setCacheHint(CacheHint.SPEED);
-				//imageview.setImage(new Image("file:" + album.getPhotos().get(0).getPath(), 175, 175, true, false, true));
-				imageview.setImage(new Image("file:" + album.getPhotos().get(0).getPath()));
+				imageview.setImage(
+					new Image(
+						"file:" + album.getPhotos().get(0).getPath(), 
+						500, 500, 
+						true, true, true
+					)
+				);
 			} else {
 				paneAlbum.setStyle("-fx-background-color: rgba(125,125,125,1)");
 			}
@@ -171,11 +161,11 @@ public class AlbumViewController extends SceneController {
 		}
 	}
 	
-	@FXML private MenuItem buttonNewAlbum;
+	//@FXML private MenuItem buttonNewAlbum;
 	@FXML private MenuItem buttonNewAlbumFromSearch;
 	@FXML private MenuItem buttonQuit;
-	@FXML private MenuItem buttonDelete;
-	@FXML private MenuItem buttonLogout;
+	//@FXML private MenuItem buttonDelete;
+	//@FXML private MenuItem buttonLogout;
 	@FXML private TilePane albumList;
 	@FXML private ScrollPane scrollpane;
 	@FXML private ComboBox<String> comboFilter;
@@ -219,13 +209,6 @@ public class AlbumViewController extends SceneController {
 	
 	private void setListeners() {
 		textboxSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-			/*
-			 * if (newValue.trim().equals("") || !newValue.contains("=") ||
-			 * (newValue.charAt(newValue.length() - 1) == '=')) {
-			 * buttonNewAlbumFromSearch.setDisable(true); setListStateToPhotos(false); }
-			 * else { buttonNewAlbumFromSearch.setDisable(false); if
-			 * (newValue.contains("=")) { searchAlbumsByTag(); } }
-			 */
 			if (newValue.trim().equals("")) {
 				buttonNewAlbumFromSearch.setDisable(true); 
 				setListStateToPhotos(false);
@@ -301,7 +284,7 @@ public class AlbumViewController extends SceneController {
 		 if (apc.getAlbum() == null)
 			 return;
 		 for (PhotoPaneController ppc : photoPaneControllers) {
-			 apc.getAlbum().addPhoto(ppc.getPhoto(), user);
+			 apc.getAlbum().addPhoto(ppc.getPhoto());
 		 }
 		 apc.setCoverImage();
 	}
@@ -342,10 +325,13 @@ public class AlbumViewController extends SceneController {
 		if (!input.contains("="))
 			return null;
 		
-		if (input.contains(" and "))
-			splitter = " and ";
-		if (input.contains(" or "))
-			splitter = " or ";
+		if (input.toLowerCase().contains(" and ")) {
+			int index = input.toLowerCase().indexOf(" and ");
+			splitter = input.substring(index, index + " and ".length());
+		} else if (input.toLowerCase().contains(" or ")) {
+			int index = input.toLowerCase().indexOf(" or ");
+			splitter = input.substring(index, index + " or ".length());
+		}
 		
 		if (splitter != null) {
 			// First tag-value pair
@@ -383,8 +369,8 @@ public class AlbumViewController extends SceneController {
 		String firstVal = null;
 		String secondTag = null;
 		String secondVal = null;
-		boolean containsAND = textboxSearch.getText().contains(" and ");
-		boolean containsOR = textboxSearch.getText().contains(" or ");
+		boolean containsAND = textboxSearch.getText().toLowerCase().contains(" and ");
+		boolean containsOR = textboxSearch.getText().toLowerCase().contains(" or ");
 		Iterator<String> i = valueTagPairs.keySet().iterator();
 		if (valueTagPairs.size() < 2) {
 			firstVal = i.next();
@@ -399,18 +385,12 @@ public class AlbumViewController extends SceneController {
 		ArrayList<Photo> visited = new ArrayList<>();
 		for (Album a : user.getAlbums()) {
 			for (Photo p : a.getPhotos()) {
-				if (containsAND) {
-					if (p.tagPairExists(firstTag, firstVal) && p.tagPairExists(secondTag, secondVal) && !visited.contains(p)) {
+				if (containsAND && p.tagPairExists(firstTag, firstVal) && p.tagPairExists(secondTag, secondVal) && !visited.contains(p)) {
 						loadPhoto(p, visited);
-					}
-				} else if (containsOR) {
-					if ((p.tagPairExists(firstTag, firstVal) || p.tagPairExists(secondTag, secondVal)) && !visited.contains(p)) {
+				} else if (containsOR && ((p.tagPairExists(firstTag, firstVal) || p.tagPairExists(secondTag, secondVal)) && !visited.contains(p))) {
 						loadPhoto(p, visited);
-					}
-				} else {
-					if (p.tagPairExists(firstTag, firstVal) && !visited.contains(p)) {
+				} else if (p.tagPairExists(firstTag, firstVal) && !visited.contains(p)) {
 						loadPhoto(p, visited);
-					}
 				}
 			}
 		}
@@ -472,7 +452,7 @@ public class AlbumViewController extends SceneController {
 	
 	public void deleteAlbum(AlbumPaneController apc, Node root) {
 		boolean approval = showPopup(
-				"Delete Album",null, 
+				"Delete Album", null, 
 				"Are you sure you want to delete " + apc.getAlbum().getName() + "?", 
 				AlertType.CONFIRMATION
 		);

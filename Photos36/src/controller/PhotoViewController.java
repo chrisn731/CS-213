@@ -151,26 +151,26 @@ public class PhotoViewController extends SceneController {
 		}
 	}
 	
-	@FXML private MenuItem buttonNewPhoto;
-	@FXML private MenuItem buttonCloseAlbum;
-	@FXML private MenuItem buttonQuit;
+	//@FXML private MenuItem buttonNewPhoto;
+	//@FXML private MenuItem buttonCloseAlbum;
+	//@FXML private MenuItem buttonQuit;
 	@FXML private MenuItem buttonCopyPhoto;
 	@FXML private MenuItem buttonMovePhoto;
 	@FXML private MenuItem buttonStartSlideshow;
-	@FXML private MenuItem buttonLogout;
+	//@FXML private MenuItem buttonLogout;
 	@FXML private ScrollPane scrollpane;
 	@FXML private TilePane photoList;
 	@FXML private ImageView mainDisplay;
 	@FXML private Label labelImageCaption;
 	@FXML private Label labelImageDate;
-	@FXML private Button buttonDelete;
-	@FXML private Button buttonEditCaption;
+	//@FXML private Button buttonDelete;
+	//@FXML private Button buttonEditCaption;
 	@FXML private ListView<String> listviewTags;
-	@FXML private Button buttonAddTag;
-	@FXML private Button buttonDeleteTag;
-	@FXML private Button buttonAddPhoto;
-	@FXML private TextField textboxSearch;
-	@FXML private DatePicker datepicker;
+	//@FXML private Button buttonAddTag;
+	//@FXML private Button buttonDeleteTag;
+	//@FXML private Button buttonAddPhoto;
+	//@FXML private TextField textboxSearch;
+	//@FXML private DatePicker datepicker;
 	@FXML private ComboBox<String> comboSearchFilter;
 	@FXML private AnchorPane paneMainDisplay;
 	
@@ -239,7 +239,7 @@ public class PhotoViewController extends SceneController {
 		}
 			
 		if (album.getPhotoByFile(file.toString()) == null) {
-			album.addPhoto(photo, user);
+			album.addPhoto(photo);
 			addPhotoToView(photo);
 		}
 		
@@ -428,7 +428,7 @@ public class PhotoViewController extends SceneController {
 	private void movePhoto() { 
 		Optional<String> result = promptPhotoMovement(false);
 		if (result.isPresent()) {
-			user.getAlbum(result.get()).addPhoto(selectedController.getPhoto(), user);
+			user.getAlbum(result.get()).addPhoto(selectedController.getPhoto());
 			processPhotoDeletion();
 		}
 	}
@@ -437,7 +437,7 @@ public class PhotoViewController extends SceneController {
 	private void copyPhoto() {
 		Optional<String> result = promptPhotoMovement(true);
 		if (result.isPresent())
-			user.getAlbum(result.get()).addPhoto(selectedController.getPhoto(), user);
+			user.getAlbum(result.get()).addPhoto(selectedController.getPhoto());
 	}
 	
 	@FXML 

@@ -13,7 +13,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.text.Text;
 import model.Album;
 import model.Photo;
 
@@ -38,17 +37,19 @@ public class SlideShowViewController {
 	@FXML private ImageView imageDisplay;
 	
 	/**
-	 * Text display panel for the image name
-	 */
-	@FXML private Text imageNameText;
-	
-	/**
 	 * Text display panel for the album name
 	 */
-	@FXML private Text albumNameText;
+	@FXML private Label albumNameLabel;
 	
-	// TODO: PICK TEXT OR LABEL AND REMOVE THIS THING
+	/**
+	 * Label display panel for the name of the image
+	 */
 	@FXML private Label imageNameLabel;
+	
+	/**
+	 * Label to display the date of the image
+	 */
+	@FXML private Label imageDateLabel;
 	
 	/**
 	 * Keeps track of our spot within the album so we can easily shift
@@ -76,7 +77,7 @@ public class SlideShowViewController {
 		for (Photo p : album.getPhotos()) {
 			photoImageMap.put(p, new Image("file:" + p.getPath(), true));
 		}
-		albumNameText.setText(album.getName());
+		albumNameLabel.setText(album.getName());
 		updateDisplay();
 	}
 	
@@ -107,7 +108,7 @@ public class SlideShowViewController {
 	private void updateDisplay() {
 		Photo photoToDisplay = album.getPhotos().get(currPhotoIndex);
 		imageDisplay.setImage(photoImageMap.get(photoToDisplay));
-		imageNameText.setText(photoToDisplay.getCaption());
 		imageNameLabel.setText(photoToDisplay.getCaption());
+		imageDateLabel.setText(photoToDisplay.getDateAsString());
 	}
 }
