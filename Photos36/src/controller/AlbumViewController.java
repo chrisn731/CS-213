@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Optional;
 
 import app.Assets;
@@ -69,8 +71,8 @@ public class AlbumViewController extends SceneController {
 			parentController = avc;
 			labelAlbumName.setText(album.getName());
 			
-			paneAlbum.setCache(true);
-			paneAlbum.setCacheHint(CacheHint.SPEED);
+			//paneAlbum.setCache(true);
+			//paneAlbum.setCacheHint(CacheHint.SPEED);
 			playScaleAnimation();
 			
 			for (Node n : paneAlbum.getChildren()) {
@@ -108,9 +110,10 @@ public class AlbumViewController extends SceneController {
 		
 		private void setCoverImage() {
 			if (album.getPhotoCount() > 0) {
-				imageview.setCache(true);
-				imageview.setCacheHint(CacheHint.SPEED);
-				imageview.setImage(new Image("file:" + album.getPhotos().get(0).getPath(), 175, 175, true, false, true));
+				//imageview.setCache(true);
+				//imageview.setCacheHint(CacheHint.SPEED);
+				//imageview.setImage(new Image("file:" + album.getPhotos().get(0).getPath(), 175, 175, true, false, true));
+				imageview.setImage(new Image("file:" + album.getPhotos().get(0).getPath()));
 			} else {
 				paneAlbum.setStyle("-fx-background-color: rgba(125,125,125,1)");
 			}
@@ -216,15 +219,19 @@ public class AlbumViewController extends SceneController {
 	
 	private void setListeners() {
 		textboxSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue.trim().equals("") || !newValue.contains("=") || (newValue.charAt(newValue.length() - 1) == '=')) {
-		    	buttonNewAlbumFromSearch.setDisable(true);
-		    	setListStateToPhotos(false);
+			/*
+			 * if (newValue.trim().equals("") || !newValue.contains("=") ||
+			 * (newValue.charAt(newValue.length() - 1) == '=')) {
+			 * buttonNewAlbumFromSearch.setDisable(true); setListStateToPhotos(false); }
+			 * else { buttonNewAlbumFromSearch.setDisable(false); if
+			 * (newValue.contains("=")) { searchAlbumsByTag(); } }
+			 */
+			if (newValue.trim().equals("")) {
+				buttonNewAlbumFromSearch.setDisable(true); 
+				setListStateToPhotos(false);
 			} else {
-		    	buttonNewAlbumFromSearch.setDisable(false);
-		    	if (newValue.contains("=")) {
-		    		searchAlbumsByTag();
-		    	}
-		    }
+				buttonNewAlbumFromSearch.setDisable(false);
+			}
 		});
 		
 		datePickerStartDate.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -257,8 +264,6 @@ public class AlbumViewController extends SceneController {
 			return;
 		
 		if (showPhotos) {
-			photoPanes.clear();
-			photoPaneControllers.clear();
 			Bindings.unbindContentBidirectional(albumList.getChildren(), albumPanes);
 			Bindings.bindContentBidirectional(albumList.getChildren(), photoPanes);
 		} else {
@@ -329,35 +334,91 @@ public class AlbumViewController extends SceneController {
 		return albumPaneController;
 	}
 	
+	private HashMap<String, String> parseTagSearch() {
+		String input = textboxSearch.getText();
+		HashMap<String, String> valueTagPairs = new HashMap<String, String>();
+		String splitter = null;
+		
+		if (!input.contains("="))
+			return null;
+		
+		if (input.contains(" and "))
+			splitter = " and ";
+		if (input.contains(" or "))
+			splitter = " or ";
+		
+		if (splitter != null) {
+			// First tag-value pair
+			String firstTagValuePair = input.substring(0, input.indexOf(splitter));
+			if (!firstTagValuePair.contains("="))
+				return null;
+			int equalsIndex = firstTagValuePair.indexOf("=");
+			valueTagPairs.put(firstTagValuePair.substring(equalsIndex + 1), firstTagValuePair.substring(0, equalsIndex));
+			
+			//Second tag-value pair
+			String secondTagValuePair = input.substring(input.indexOf(splitter)).replace(splitter, "");
+			if (!secondTagValuePair.contains("="))
+				return null;
+			equalsIndex = secondTagValuePair.indexOf("=");
+			valueTagPairs.put(secondTagValuePair.substring(equalsIndex).replace("=", ""), secondTagValuePair.substring(0, equalsIndex));
+		} else {
+			valueTagPairs.put(input.substring(input.indexOf('=')).replace("=", ""), input.substring(0, input.indexOf('=')));
+		}
+		return valueTagPairs;
+	}
+	
+	@FXML
 	private void searchAlbumsByTag() {
-		String key = textboxSearch.getText().substring(0, textboxSearch.getText().indexOf('='));
-		String val = textboxSearch.getText().substring(textboxSearch.getText().indexOf('=')).replace("=", "");
+		HashMap<String, String> valueTagPairs = parseTagSearch();
+		if (valueTagPairs == null) {
+			showPopup("Error", null, "Invalid search input.", AlertType.WARNING);
+			return;
+		}
+		
+		photoPanes.clear();
+		photoPaneControllers.clear();
 		setListStateToPhotos(true);
+		
+		String firstTag = null;
+		String firstVal = null;
+		String secondTag = null;
+		String secondVal = null;
+		boolean containsAND = textboxSearch.getText().contains(" and ");
+		boolean containsOR = textboxSearch.getText().contains(" or ");
+		Iterator<String> i = valueTagPairs.keySet().iterator();
+		if (valueTagPairs.size() < 2) {
+			firstVal = i.next();
+			firstTag = valueTagPairs.get(firstVal);
+		} else {
+			firstVal = i.next();
+			firstTag = valueTagPairs.get(firstVal);
+			secondVal = i.next();
+			secondTag = valueTagPairs.get(secondVal);
+		}
 		
 		ArrayList<Photo> visited = new ArrayList<>();
 		for (Album a : user.getAlbums()) {
 			for (Photo p : a.getPhotos()) {
-				if (p.tagPairExists(key, val) && !visited.contains(p)) {
-					FXMLLoader loader = loadAsset(Assets.PHOTO_PANE_ALBUM_VIEW);
-					PhotoPaneController ppc = loader.getController();
-					ppc.init(p);
-					photoPanes.add(loader.getRoot());
-					photoPaneControllers.add(ppc);
-					visited.add(p);
+				if (containsAND) {
+					if (p.tagPairExists(firstTag, firstVal) && p.tagPairExists(secondTag, secondVal) && !visited.contains(p)) {
+						loadPhoto(p, visited);
+					}
+				} else if (containsOR) {
+					if ((p.tagPairExists(firstTag, firstVal) || p.tagPairExists(secondTag, secondVal)) && !visited.contains(p)) {
+						loadPhoto(p, visited);
+					}
+				} else {
+					if (p.tagPairExists(firstTag, firstVal) && !visited.contains(p)) {
+						loadPhoto(p, visited);
+					}
 				}
 			}
 		}
-		
 	}
 	
-	/*
-	 * PROBLEM: we are looping every album and showing the matches from that album. This means that if a photo exists within x albums, we add it 
-	 * 			x times. Need a way to only add the unique ones.
-	 * SOLUTIONS: 
-	 * 		(1) user stores a uniquePhotos list
-	 * 		(2) this function builds up a "visited" list where if we match the tag but already added this, don't add it again
-	 */
 	public void searchAlbumsByDate() {
+		photoPanes.clear();
+		photoPaneControllers.clear();
 		setListStateToPhotos(true);
 		
 		ArrayList<Photo> visited = new ArrayList<>();
@@ -376,6 +437,15 @@ public class AlbumViewController extends SceneController {
 				}
 			}
 		}
+	}
+	
+	private void loadPhoto(Photo p, ArrayList<Photo> visited) {
+		FXMLLoader loader = loadAsset(Assets.PHOTO_PANE_ALBUM_VIEW);
+		PhotoPaneController ppc = loader.getController();
+		ppc.init(p);
+		photoPanes.add(loader.getRoot());
+		photoPaneControllers.add(ppc);
+		visited.add(p);
 	}
 	
 	private boolean duplicateNameFound(String name) {

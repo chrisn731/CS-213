@@ -32,7 +32,6 @@ public class Album implements Serializable {
 			return false;
 		photos.add(p);
 		numPhotos++;
-		p.incrementAlbumRefs();
 		filePhotoMap.put(p.getPath(), p);
 		return true;
 	}
@@ -40,7 +39,6 @@ public class Album implements Serializable {
 	public void removePhoto(Photo p) {
 		photos.remove(p);
 		numPhotos--;
-		p.decrementAlbumRefs();
 		filePhotoMap.remove(p.getPath());
 	}
 	

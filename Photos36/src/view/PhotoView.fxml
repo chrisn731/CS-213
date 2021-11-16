@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane stylesheets="@/view/edit_button_background.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PhotoViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="827.0" stylesheets="@/view/UIStyles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PhotoViewController">
    <children>
       <MenuBar prefHeight="26.0" prefWidth="827.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <menus>
@@ -28,18 +28,18 @@
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="buttonCloseAlbum" mnemonicParsing="false" onAction="#closeAlbum" text="Close Album" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem onAction="#doQuit" fx:id="buttonQuit" mnemonicParsing="false" text="Quit" />
+                  <MenuItem fx:id="buttonQuit" mnemonicParsing="false" onAction="#doQuit" text="Quit" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
                <items>
-                  <MenuItem onAction="#copyPhoto" fx:id="buttonCopyPhoto" mnemonicParsing="false" text="Copy to" />
-                  <MenuItem onAction="#movePhoto" fx:id="buttonMovePhoto" mnemonicParsing="false" text="Move to" />
+                  <MenuItem fx:id="buttonCopyPhoto" mnemonicParsing="false" onAction="#copyPhoto" text="Copy to" />
+                  <MenuItem fx:id="buttonMovePhoto" mnemonicParsing="false" onAction="#movePhoto" text="Move to" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="User">
                <items>
-                  <MenuItem onAction="#doLogout" fx:id="buttonLogout" mnemonicParsing="false" text="Logout" />
+                  <MenuItem fx:id="buttonLogout" mnemonicParsing="false" onAction="#doLogout" text="Logout" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="View">
@@ -54,9 +54,9 @@
 		  <!-- TILEPANE OF PHOTOS -->
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="538.0" prefWidth="390.0">
                <children>
-                  <ScrollPane fx:id="scrollpane" prefHeight="532.0" prefWidth="390.0">
+                  <ScrollPane fx:id="scrollpane" prefHeight="509.0" prefWidth="390.0">
                      <content>
-                        <TilePane fx:id="photoList" hgap="10.0" prefHeight="570.0" prefTileHeight="175.0" prefTileWidth="150.0" prefWidth="374.0" vgap="10.0">
+                        <TilePane fx:id="photoList" hgap="10.0" prefHeight="507.0" prefTileHeight="175.0" prefTileWidth="150.0" prefWidth="374.0" vgap="10.0">
                         </TilePane>
                      </content>
                   </ScrollPane>
@@ -71,29 +71,30 @@
                         </ImageView>
                      </children>
                   </HBox>
-                  <Label fx:id="labelImageCaption" alignment="CENTER" layoutX="81.0" layoutY="36.0" prefHeight="35.0" prefWidth="227.0" text="Image caption/name" textAlignment="CENTER">
+                  <Label fx:id="labelImageCaption" alignment="CENTER" layoutX="47.0" layoutY="38.0" prefHeight="35.0" prefWidth="292.0" text="Image caption/name" textAlignment="CENTER">
                      <font>
                         <Font name="Nirmala UI Semilight" size="24.0" />
                      </font>
                   </Label>
-                  <Label fx:id="labelImageDate" alignment="CENTER" layoutX="105.0" layoutY="65.0" prefHeight="27.0" prefWidth="176.0" text="10/22/2021" textAlignment="CENTER">
+                  <Label fx:id="labelImageDate" alignment="CENTER" layoutX="105.0" layoutY="72.0" prefHeight="27.0" prefWidth="176.0" text="10/22/2021" textAlignment="CENTER">
                      <font>
                         <Font name="Nirmala UI Semilight" size="18.0" />
                      </font>
                   </Label>
-                  <Button fx:id="buttonDeletePhoto" onAction="#deletePhoto" styleClass="deleteButton" layoutX="349.0" layoutY="-1.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                  <ListView fx:id="listviewTags" layoutX="73.0" layoutY="396.0" prefHeight="62.0" prefWidth="241.0" />
-                  <Button fx:id="buttonAddTag" onAction="#addTags" layoutX="73.0" layoutY="464.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="60.0" text="Add">
+                  <Button fx:id="buttonDeletePhoto" layoutX="349.0" layoutY="8.0" mnemonicParsing="false" onAction="#deletePhoto" prefHeight="30.0" prefWidth="30.0" styleClass="deleteButton" />
+                  <ListView fx:id="listviewTags" layoutX="52.0" layoutY="396.0" prefHeight="62.0" prefWidth="285.0" />
+                  <Button fx:id="buttonAddTag" styleClass="textButton" layoutX="55.0" layoutY="464.0" mnemonicParsing="false" onAction="#addTags" prefHeight="20.0" prefWidth="60.0" text="Add">
                      <font>
                         <Font size="10.0" />
                      </font>
                   </Button>
-                  <Button onAction="#removeTag" fx:id="buttonDeleteTag" layoutX="255.0" layoutY="464.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="60.0" text="Remove">
+                  <Button fx:id="buttonDeleteTag" styleClass="textButton" layoutX="273.0" layoutY="464.0" mnemonicParsing="false" onAction="#removeTag" prefHeight="20.0" prefWidth="60.0" text="Remove">
                      <font>
                         <Font size="10.0" />
                      </font>
                   </Button>
-                  <Label layoutX="73.0" layoutY="378.0" text="Tags" />
+                  <Label layoutX="52.0" layoutY="378.0" text="Tags" />
+                  <Button fx:id="buttonEditCaption" layoutX="318.0" layoutY="8.0" mnemonicParsing="false" onAction="#editCaption" prefHeight="30.0" prefWidth="30.0" styleClass="editButton" />
                </children>
             </AnchorPane>
         </items>

@@ -21,7 +21,6 @@ public class Photo implements Serializable {
 	private LocalDate date = null;
 	private String filePath = null;
 	private String caption = "";
-	private int numAlbumRefs = 0;
 	
 	public Photo(File f) {
 		this.caption = f.getName().substring(0, f.getName().lastIndexOf('.'));
@@ -86,20 +85,6 @@ public class Photo implements Serializable {
 	
 	public String getDateAsString() {
 		return date.format(DateTimeFormatter.ofPattern("MM/dd/uuuu"));
-	}
-	
-	public void incrementAlbumRefs() {
-		numAlbumRefs++;
-	}
-	
-	public void decrementAlbumRefs() {
-		numAlbumRefs--;
-		if (numAlbumRefs < 0)
-			numAlbumRefs = 0;
-	}
-	
-	public int getNumAlbumRefs() {
-		return numAlbumRefs;
 	}
 	
 	/*

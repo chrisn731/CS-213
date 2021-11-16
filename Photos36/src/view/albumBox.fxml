@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="root" stylesheets="@/view/edit_button_background.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AlbumViewController$AlbumPaneController">
+<AnchorPane fx:id="root" stylesheets="@/view/UIStyles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AlbumViewController$AlbumPaneController">
  <children>
 	<Text fx:id="labelAlbumName" layoutX="4.0" layoutY="192.0" strokeType="OUTSIDE" strokeWidth="0.0" text="stock" textAlignment="CENTER" wrappingWidth="166.93671035766602">
 	   <font>

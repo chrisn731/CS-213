@@ -115,6 +115,9 @@ public class PhotoViewController extends SceneController {
 		@FXML
 		private Button buttonDone;
 		
+		@FXML
+		private Label labelApplyFeedback;
+		
 		private Stage stage;
 		private User user;
 		private Photo photo;
@@ -129,15 +132,21 @@ public class PhotoViewController extends SceneController {
 		@FXML
 		private void applyTags() {
 			String tag = comboTagNames.getValue();
+			String val = textboxTagValues.getText();
 			if (!tag.isBlank() && !user.getTagNames().contains(tag)) {
 				comboTagNames.getItems().add(comboTagNames.getValue());
 				user.getTagNames().add(tag);
 			}
-			photo.addTagPair(tag, textboxTagValues.getText());
+			if (!tag.isBlank() && !val.isBlank()) {
+				String text = photo.tagPairExists(tag, val) ? "Tag already applied!" : "Tag applied: " + tag + "=" + val;
+				photo.addTagPair(tag, val);
+				labelApplyFeedback.setText(text);
+			}
 		}
 		
 		@FXML
 		private void doDone() {
+			applyTags();
 			stage.close();
 		}
 	}
@@ -155,6 +164,7 @@ public class PhotoViewController extends SceneController {
 	@FXML private Label labelImageCaption;
 	@FXML private Label labelImageDate;
 	@FXML private Button buttonDelete;
+	@FXML private Button buttonEditCaption;
 	@FXML private ListView<String> listviewTags;
 	@FXML private Button buttonAddTag;
 	@FXML private Button buttonDeleteTag;
@@ -185,6 +195,7 @@ public class PhotoViewController extends SceneController {
 		for (Photo p : a.getPhotos()) {
 			addPhotoToView(p);
 		}
+		scrollpane.setFitToWidth(true);
 		changeButtonStates();
 	}
 	
@@ -208,10 +219,6 @@ public class PhotoViewController extends SceneController {
 	}
 	
 	@FXML
-	/* TODO: either add a new photo or add a copy (if found in another album) -- this works rn
-	 * 		 also, if the photo exists within the album this controller stores, don't add it to the album or to the view
-	 * 		 (album.addPhoto() handles this case and won't add a duplicate, but it's still added to photoview twice)
-	 */
 	private void addPhoto() {
 		File file = invokeFileChooser();
 		if (file == null)
@@ -275,6 +282,16 @@ public class PhotoViewController extends SceneController {
 			}
 			tags.add(listItem);
 		}
+	}
+	
+	@FXML
+	private void editCaption() {
+		String newCaption = getUserInput("Edit Name", null, "Edit name: ", labelImageCaption.getText(), false);
+		if (newCaption == null)
+			return;
+		selectedController.getPhoto().setCaption(newCaption);
+		selectedController.labelCaption.setText(newCaption);
+		labelImageCaption.setText(newCaption);
 	}
 	
 	@FXML 

@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AlbumViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="827.0" stylesheets="@/view/UIStyles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AlbumViewController">
    <children>
       <MenuBar prefHeight="26.0" prefWidth="827.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <menus>
@@ -37,7 +37,7 @@
             </TilePane>
          </content>
       </ScrollPane>
-      <TextField fx:id="textboxSearch" layoutX="10.0" layoutY="38.0" prefHeight="26.0" prefWidth="757.0" promptText="Search all photos" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="38.0" />
+      <TextField fx:id="textboxSearch" onAction="#searchAlbumsByTag" layoutX="10.0" layoutY="38.0" prefHeight="26.0" prefWidth="757.0" promptText="Search all photos" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="38.0" />
       <ComboBox fx:id="comboFilter" layoutX="697.0" layoutY="38.0" onAction="#updateSearchBar" prefHeight="26.0" prefWidth="118.0" promptText="Search filter" style="-fx-background-color: #b4b4b2;" AnchorPane.rightAnchor="12.0" />
       <AnchorPane fx:id="paneDateRange" layoutX="10.0" layoutY="38.0" prefHeight="26.0" prefWidth="677.0" visible="false" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="139.39999999999998">
          <children>
