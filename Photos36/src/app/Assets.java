@@ -18,12 +18,12 @@ public enum Assets implements Loadable {
 	/**
 	 * Photo Pane asset is utilized within the photo view scene
 	 */
-	PHOTO_PANE_PHOTO_VIEW("/view/photoPane.fxml"),
+	PHOTO_PANE_PHOTO_VIEW("/view/photoPane1.fxml"),
 	
 	/**
 	 * Photo Pane asset that is utilized within the album view scene
 	 */
-	PHOTO_PANE_ALBUM_VIEW("/view/photoPaneAlbumView.fxml"),
+	PHOTO_PANE_ALBUM_VIEW("/view/photoPaneAlbumView1.fxml"),
 	
 	/**
 	 * Slide show asset that is utilized within the photo view scene

@@ -27,7 +27,7 @@ public enum Scenes implements Loadable {
 	/**
 	 * The photo view
 	 */
-	PHOTO_VIEW("/view/PhotoView.fxml");
+	PHOTO_VIEW("/view/PhotoView1.fxml");
 	
 	/**
 	 * The path to the view

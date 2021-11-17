@@ -6,6 +6,8 @@ package model;
  */
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +36,16 @@ public class Album implements Serializable {
 	 * Number of photos inside of the album
 	 */
 	private int numPhotos;
+	
+	/**
+	 * Earliest date in this albums date range.
+	 */
+	private LocalDate minDate;
+	
+	/**
+	 * Latest date in this albums date range.
+	 */
+	private LocalDate maxDate;
 	
 	/**
 	 * Mapping of file path to a photo. Used for fast lookups within an album
@@ -78,7 +90,44 @@ public class Album implements Serializable {
 		photos.add(p);
 		numPhotos++;
 		filePhotoMap.put(p.getPath(), p);
+		calculateDateRange();
 		return true;
+	}
+	
+	/**
+	 * Calculates the date range.
+	 */
+	private void calculateDateRange() {
+		minDate = photos.isEmpty() ? null : photos.get(0).getLocalDate();
+		maxDate = photos.isEmpty() ? null : photos.get(0).getLocalDate();
+		
+		for (Photo p : photos) {
+			if (p.getLocalDate().isBefore(minDate))
+				minDate = p.getLocalDate();
+			if (p.getLocalDate().isAfter(maxDate))
+				maxDate = p.getLocalDate();
+		}
+			
+	}
+	
+	/**
+	 * Gets the earliest date of a photo in the album.
+	 * @return  the earliest date or null if the album has no photos
+	 */
+	public String getMinDateAsString() {
+		if (minDate == null)
+			return null;
+		return minDate.format(DateTimeFormatter.ofPattern("MM/dd/uuuu"));
+	}
+	
+	/**
+	 * Gets the latest date of a photo in the album.
+	 * @return  the latest date or null if the album has no photos
+	 */
+	public String getMaxDateAsString() {
+		if (maxDate == null)
+			return null;
+		return maxDate.format(DateTimeFormatter.ofPattern("MM/dd/uuuu"));
 	}
 	
 	/**
@@ -89,6 +138,7 @@ public class Album implements Serializable {
 		photos.remove(p);
 		numPhotos--;
 		filePhotoMap.remove(p.getPath());
+		calculateDateRange();
 	}
 	
 	/**

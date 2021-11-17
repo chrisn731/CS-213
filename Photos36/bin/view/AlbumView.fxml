@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- 
+Authors:
+	Michael Nelli - mrn73
+	Christopher Naporlee - cmn134
+-->
+
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -33,18 +41,20 @@
       </MenuBar>
       <ScrollPane fx:id="scrollpane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="400.0" prefWidth="631.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="75.0">
          <content>
-            <TilePane fx:id="albumList" hgap="30.0" prefTileHeight="200.0" prefTileWidth="175.0" vgap="30.0">
+            <TilePane fx:id="viewList" hgap="30.0" prefTileHeight="200.0" prefTileWidth="175.0" vgap="30.0">
             </TilePane>
          </content>
       </ScrollPane>
-      <TextField fx:id="textboxSearch" onAction="#searchAlbumsByTag" layoutX="10.0" layoutY="38.0" prefHeight="26.0" prefWidth="757.0" promptText="Search all photos" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="38.0" />
-      <ComboBox fx:id="comboFilter" layoutX="697.0" layoutY="38.0" onAction="#updateSearchBar" prefHeight="26.0" prefWidth="118.0" promptText="Search filter" style="-fx-background-color: #b4b4b2;" AnchorPane.rightAnchor="12.0" />
+      <TextField fx:id="textboxSearch" layoutX="10.0" layoutY="38.0" onAction="#searchAlbumsByTag" prefHeight="26.0" prefWidth="757.0" promptText="Search all photos" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="38.0" />
+      <ComboBox fx:id="comboFilter" layoutX="697.0" layoutY="38.0" onAction="#updateSearchBar" prefHeight="26.0" prefWidth="118.0" promptText="Search filter" AnchorPane.rightAnchor="12.0" />
       <AnchorPane fx:id="paneDateRange" layoutX="10.0" layoutY="38.0" prefHeight="26.0" prefWidth="677.0" visible="false" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="139.39999999999998">
          <children>
-            <DatePicker fx:id="datePickerStartDate" editable="false" prefHeight="26.0" prefWidth="310.0" promptText="Start date" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="368.0" />
-            <DatePicker fx:id="datePickerEndDate" editable="false" layoutX="367.0" prefHeight="26.0" prefWidth="310.0" promptText="End date" AnchorPane.leftAnchor="367.0" AnchorPane.rightAnchor="0.0" />
-            <Text layoutX="330.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="TO" />
+            <DatePicker fx:id="datePickerStartDate" editable="false" prefHeight="26.0" prefWidth="275.0" promptText="Start date" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="403.0" />
+            <DatePicker fx:id="datePickerEndDate" editable="false" layoutX="317.0" prefHeight="26.0" prefWidth="275.0" promptText="End date" AnchorPane.leftAnchor="317.0" AnchorPane.rightAnchor="86.0" />
+            <Text layoutX="289.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="TO" />
+            <Button fx:id="buttonClearDates" layoutX="602.0" mnemonicParsing="false" onAction="#clearDates" prefHeight="26.0" prefWidth="75.0" text="Clear" AnchorPane.rightAnchor="0.4000000000000199" />
          </children>
       </AnchorPane>
+      <Label fx:id="labelNoResults" alignment="CENTER" layoutX="305.0" layoutY="273.0" prefHeight="60.0" prefWidth="217.0" text="No results found!" textAlignment="CENTER" visible="false" AnchorPane.leftAnchor="305.0" AnchorPane.rightAnchor="305.0" />
    </children>
 </AnchorPane>

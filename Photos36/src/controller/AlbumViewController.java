@@ -1,5 +1,9 @@
 package controller;
 
+/**
+ * @author Michael Nelli - mrn73
+ * @author Christopher Naporlee - cmn134
+ */
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,23 +42,73 @@ import model.Album;
 import model.Photo;
 import model.User;
 
+/**
+ * Main controller of the Album View.
+ */
 public class AlbumViewController extends SceneController {
 
+	/**
+	 * Main controller of each Album in the Album View.
+	 */
 	public static class AlbumPaneController {
+		/**
+		 * Text that displays the album's name.
+		 */
 		@FXML private Text labelAlbumName;
+		
+		/**
+		 * Text that displays the album's photo count.
+		 */
 		@FXML private Text labelPhotoCount;
+		
+		/**
+		 * Text that displays the album's date range.
+		 */
 		@FXML private Text labelDates;
+		
 		//@FXML private Button buttonEdit;
 		//@FXML private Button buttonDelete;
+		
+		/**
+		 * Pane that holds the album's image and text fields.
+		 */
 		@FXML private Pane paneAlbum;
+		
+		/**
+		 * Root pane that holds all of the album's viewable contents.
+		 */
 		@FXML private AnchorPane root;
+		
+		/**
+		 * Imageview that holds the first image of the album.
+		 */
 		@FXML private ImageView imageview;
+		
+		/**
+		 * Holds the imageview so that it stays centered in the album pane.
+		 */
 		@FXML private HBox imageViewContainer;
 		
+		/**
+		 * The actual album model that this object represents.
+		 */
 		private Album album;
+		
+		/**
+		 * The AlbumViewController that this object is a part of.
+		 */
 		private AlbumViewController parentController;
+		
+		/**
+		 * The opacity of the imageview when the cursor is hovering over the album pane.
+		 */
 		private final double HOVER_OPACITY = .1;
 		
+		/**
+		 * Initializes an album pane.
+		 * @param a  album that this object is connected to
+		 * @param avc  AlbumViewController that this object is controlled by
+		 */
 		public void init(Album a, AlbumViewController avc) {
 			album = a;
 			parentController = avc;
@@ -90,11 +144,14 @@ public class AlbumViewController extends SceneController {
 					}
 				}
 			});
-			labelDates.setText("");
 			
+			setDateRange();
 			setCoverImage();
 		}
 		
+		/**
+		 * Sets the imageview to be the first image of the stored album object.
+		 */
 		private void setCoverImage() {
 			if (album.getPhotoCount() > 0) {
 				imageview.setImage(
@@ -109,6 +166,19 @@ public class AlbumViewController extends SceneController {
 			}
 		}
 		
+		/**
+		 * Sets the date range of the album.
+		 */
+		private void setDateRange() {
+			if (album.getMinDateAsString() == null || album.getMaxDateAsString() == null)
+				labelDates.setText("");
+			else 
+				labelDates.setText(album.getMinDateAsString() + " - " + album.getMaxDateAsString());
+		}
+		
+		/**
+		 * Changes the album name in both the view and in the stored album object.
+		 */
 		@FXML
 		private void editAlbumName() {
 			String newName;
@@ -118,11 +188,17 @@ public class AlbumViewController extends SceneController {
 			}
 		}
 		
+		/**
+		 * Removes this object from the Album View's list of albums.
+		 */
 		@FXML
 		private void deleteAlbum() {
 			parentController.deleteAlbum(this, root);
 		}
 		
+		/**
+		 * Plays a scaling animation of the album pane.
+		 */
 		private void playScaleAnimation() {
 			paneAlbum.setScaleX(.05);
 			paneAlbum.setScaleY(.05);
@@ -136,51 +212,149 @@ public class AlbumViewController extends SceneController {
 			st.play();
 		}
 		
+		/**
+		 * Gets the stored album object.
+		 * @return the stored album
+		 */
 		public Album getAlbum() {
 			return album;
 		}
 	}
 	
+	/**
+	 * Controller of a photo that is created from a search.
+	 */
 	public static class PhotoPaneController {
-		@FXML
-		private ImageView imageview;
+		/**
+		 * Displays the photo that is stored in this object
+		 */
+		@FXML private ImageView imageview;
 		
-		@FXML
-		private Label labelCaption;
+		/**
+		 * Label that contains that caption of the photo stored in this object
+		 */
+		@FXML private Label labelCaption;
 		
+		/**
+		 * The actual photo object that this object represents
+		 */
 		private Photo photo;
 		
+		/**
+		 * Initializes a photo pane
+		 * @param p
+		 */
 		private void init(Photo p) {
 			photo = p;
 			imageview.setImage(new Image("file:" + p.getPath(), 300, 300, true, false, true));
 			labelCaption.setText(p.getCaption());
 		}
 		
+		/**
+		 * Gets the photo that this object represents
+		 * @return photo stored in this object
+		 */
 		private Photo getPhoto() {
 			return photo;
 		}
 	}
 	
 	//@FXML private MenuItem buttonNewAlbum;
+	
+	/**
+	 * Menu button that creates a new album from search results.
+	 */
 	@FXML private MenuItem buttonNewAlbumFromSearch;
+	
+	/**
+	 * Menu button that closes the program.
+	 */
 	@FXML private MenuItem buttonQuit;
+	
 	//@FXML private MenuItem buttonDelete;
 	//@FXML private MenuItem buttonLogout;
-	@FXML private TilePane albumList;
+	
+	/**
+	 * The list of all albums that are within a user. Albums are replaced by photos.
+	 * during a search
+	 */
+	@FXML private TilePane viewList;
+	
+	/**
+	 * Stores the list of albums contained in the tilepane so that the list can grow.
+	 */
 	@FXML private ScrollPane scrollpane;
+	
+	/**
+	 * Lets the user select which search method they want to use.
+	 */
 	@FXML private ComboBox<String> comboFilter;
+	
+	/**
+	 * Responsible for holding searches related to tags.
+	 */
 	@FXML private TextField textboxSearch;
+	
+	/**
+	 * Contains the DatePickers.
+	 */
 	@FXML private AnchorPane paneDateRange;
+	
+	/**
+	 * The start date of the date range we are searching for.
+	 */
 	@FXML private DatePicker datePickerStartDate;
+	
+	/**
+	 * The end date of the date range we are searching for.
+	 */
 	@FXML private DatePicker datePickerEndDate;
 	
+	/**
+	 * Label that appears when no results are found.
+	 */
+	@FXML private Label labelNoResults;
+	
+	/**
+	 * Button that clears the DatePicker fields.
+	 */
+	@FXML private Button buttonClearDates;
+	
+	/**
+	 * The user that we are logged into.
+	 */
 	private User user;
+	
+	/**
+	 * The list of controllers that each correspond to a unique album stored in the user.
+	 */
 	private ArrayList<AlbumPaneController> albumPaneControllers;
+	
+	/**
+	 * The list of controllers that each correspond to a unique photo stored in the user
+	 * that matches a lookup within a search field.
+	 */
 	private ArrayList<PhotoPaneController> photoPaneControllers;
+	
+	/**
+	 * Holds the viewable photo panes that will be displayed in the list.
+	 */
 	private ObservableList<Node> photoPanes;
+	
+	/**
+	 * Holds the viewable album panes that will be displayed in the list.
+	 */
 	private ObservableList<Node> albumPanes;
+	
+	/**
+	 * Switches the list to show either photos or albums.
+	 */
 	private boolean showPhotos = true;
 	
+	/**
+	 * Initializes a new Album View.
+	 * @param u User that this Album View will reference
+	 */
 	public void init(User u) {
 		this.user = u;
 		albumPaneControllers = new ArrayList<AlbumPaneController>();
@@ -207,13 +381,14 @@ public class AlbumViewController extends SceneController {
 		buttonNewAlbumFromSearch.setDisable(true);
 	}
 	
+	/**
+	 * Sets the listeners of the search fields.
+	 */
 	private void setListeners() {
 		textboxSearch.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue.trim().equals("")) {
-				buttonNewAlbumFromSearch.setDisable(true); 
 				setListStateToPhotos(false);
-			} else {
-				buttonNewAlbumFromSearch.setDisable(false);
+				//buttonNewAlbumFromSearch.setDisable(true);
 			}
 		});
 		
@@ -242,22 +417,32 @@ public class AlbumViewController extends SceneController {
 		});
 	}
 	
+	/**
+	 * Changes which observable list the tilepane reads from.
+	 * @param showPhotos  boolean to determine if we show photos or albums in the list
+	 */
 	private void setListStateToPhotos(boolean showPhotos) {
+		labelNoResults.setVisible(false);
+		
 		if (this.showPhotos == showPhotos)
 			return;
 		
 		if (showPhotos) {
-			Bindings.unbindContentBidirectional(albumList.getChildren(), albumPanes);
-			Bindings.bindContentBidirectional(albumList.getChildren(), photoPanes);
+			Bindings.unbindContentBidirectional(viewList.getChildren(), albumPanes);
+			Bindings.bindContentBidirectional(viewList.getChildren(), photoPanes);
 		} else {
-			Bindings.unbindContentBidirectional(albumList.getChildren(), photoPanes);
-			Bindings.bindContentBidirectional(albumList.getChildren(), albumPanes);
+			buttonNewAlbumFromSearch.setDisable(true);
+			Bindings.unbindContentBidirectional(viewList.getChildren(), photoPanes);
+			Bindings.bindContentBidirectional(viewList.getChildren(), albumPanes);
 		}
 		this.showPhotos = showPhotos;
 	}
 	
+	/**
+	 * Uses the selected field of the search filter to determine which input fields to display.
+	 */
 	@FXML
-	private void updateSearchBar(ActionEvent e) {
+	private void updateSearchBar() {
 		boolean isDate = comboFilter.getValue().equals("Sort by: Date");
 		if (isDate) {
 			datePickerStartDate.setValue(null);
@@ -270,16 +455,11 @@ public class AlbumViewController extends SceneController {
 		setListStateToPhotos(false);
 	}
 	
+	/**
+	 * Creates an album from the search results.
+	 */
 	@FXML
-	private void menuSelect(ActionEvent e) {
-		MenuItem item = (MenuItem) e.getSource();
-		if (item == buttonQuit) {
-			setVval();
-		}
-	}
-	
-	@FXML
-	private void createAlbumFromSearch(ActionEvent e) {
+	private void createAlbumFromSearch() {
 		 AlbumPaneController apc = createAlbum();
 		 if (apc.getAlbum() == null)
 			 return;
@@ -289,17 +469,28 @@ public class AlbumViewController extends SceneController {
 		 apc.setCoverImage();
 	}
 	
+	/**
+	 * Switches the scene to the Login View
+	 */
 	@FXML
-	private void logout(ActionEvent e) {
+	private void logout() {
 		LoginViewController lvc = (LoginViewController) switchScene(Scenes.LOGIN);
 		lvc.init(s);
 	}
 	
+	/**
+	 * Closes the program.
+	 */
 	@FXML
-	private void doQuit(ActionEvent e) {
+	private void doQuit() {
 		Platform.exit();
 	}
 
+	/**
+	 * Creates a new album.
+	 * Displays an error message if no name is given in the pop-up dialog or a duplicate name is found.
+	 * @return the created AlbumPaneController
+	 */
 	@FXML
 	private AlbumPaneController createAlbum() {
 		String name = getUserInput("New Album", null, "Enter name: ", null, true);
@@ -317,6 +508,11 @@ public class AlbumViewController extends SceneController {
 		return albumPaneController;
 	}
 	
+	/**
+	 * Parses a tag search
+	 * @return a Map that contains the tag-value pairs (NOTE: the value of the tag is the key, so it is stored
+	 * as value-tag)
+	 */
 	private HashMap<String, String> parseTagSearch() {
 		String input = textboxSearch.getText();
 		HashMap<String, String> valueTagPairs = new HashMap<String, String>();
@@ -353,6 +549,10 @@ public class AlbumViewController extends SceneController {
 		return valueTagPairs;
 	}
 	
+	/**
+	 * Searches through all albums within the user by a given tag-value pair and displays all matches.
+	 * Displays an error if the input could not be parsed.
+	 */
 	@FXML
 	private void searchAlbumsByTag() {
 		HashMap<String, String> valueTagPairs = parseTagSearch();
@@ -386,16 +586,23 @@ public class AlbumViewController extends SceneController {
 		for (Album a : user.getAlbums()) {
 			for (Photo p : a.getPhotos()) {
 				if (containsAND && p.tagPairExists(firstTag, firstVal) && p.tagPairExists(secondTag, secondVal) && !visited.contains(p)) {
-						loadPhoto(p, visited);
+					loadPhoto(p, visited);
 				} else if (containsOR && ((p.tagPairExists(firstTag, firstVal) || p.tagPairExists(secondTag, secondVal)) && !visited.contains(p))) {
-						loadPhoto(p, visited);
-				} else if (p.tagPairExists(firstTag, firstVal) && !visited.contains(p)) {
-						loadPhoto(p, visited);
+					loadPhoto(p, visited);
+				} else if (!containsOR && !containsAND && p.tagPairExists(firstTag, firstVal) && !visited.contains(p)) {
+					loadPhoto(p, visited);
 				}
 			}
 		}
+		if (visited.isEmpty()) {
+			labelNoResults.setVisible(true);
+		}
+		buttonNewAlbumFromSearch.setDisable(photoPanes.isEmpty());
 	}
 	
+	/**
+	 * Searches through all albums within the user by date range. 
+	 */
 	public void searchAlbumsByDate() {
 		photoPanes.clear();
 		photoPaneControllers.clear();
@@ -405,8 +612,8 @@ public class AlbumViewController extends SceneController {
 		for (AlbumPaneController apc : albumPaneControllers) {
 			for (Photo p : apc.getAlbum().getPhotos()) {
 				LocalDate photoDate = p.getLocalDate();
-				if (photoDate.isAfter(datePickerStartDate.getValue()) && 
-						photoDate.isBefore(datePickerEndDate.getValue()) &&
+				if (photoDate.compareTo(datePickerStartDate.getValue()) >= 0 && 
+						photoDate.compareTo(datePickerEndDate.getValue()) <= 0 &&
 						!visited.contains(p)) {
 					FXMLLoader loader = loadAsset(Assets.PHOTO_PANE_ALBUM_VIEW);
 					PhotoPaneController ppc = loader.getController();
@@ -417,8 +624,25 @@ public class AlbumViewController extends SceneController {
 				}
 			}
 		}
+		if (visited.isEmpty()) {
+			labelNoResults.setVisible(true);
+		}
+		buttonNewAlbumFromSearch.setDisable(photoPanes.isEmpty());
 	}
 	
+	@FXML
+	private void clearDates() {
+		datePickerStartDate.setValue(null);
+		datePickerEndDate.setValue(null);
+		setListStateToPhotos(false);
+	}
+	
+	/**
+	 * Loads the photo into view and creates a corresponding controller object. Adds the photo the list
+	 * of visited photos to prevent duplicates in the view.
+	 * @param p  the photo to load
+	 * @param visited  the list of photos that have been previously loaded
+	 */
 	private void loadPhoto(Photo p, ArrayList<Photo> visited) {
 		FXMLLoader loader = loadAsset(Assets.PHOTO_PANE_ALBUM_VIEW);
 		PhotoPaneController ppc = loader.getController();
@@ -428,6 +652,11 @@ public class AlbumViewController extends SceneController {
 		visited.add(p);
 	}
 	
+	/**
+	 * Checks whether a name is already used by an album within the user
+	 * @param name  we want to check for
+	 * @return  whether or not the name is in use
+	 */
 	private boolean duplicateNameFound(String name) {
 		for (AlbumPaneController apc : albumPaneControllers) {
 			if (apc.getAlbum().getName().equals(name)) {
@@ -438,11 +667,20 @@ public class AlbumViewController extends SceneController {
 		return false;
 	}
 	
+	/**
+	 * Switches to the photo view a selected album.
+	 * @param a  the selected album
+	 */
 	public void requestAlbumOpen(Album a) {
 		PhotoViewController pvc = (PhotoViewController) switchScene(Scenes.PHOTO_VIEW);
 		pvc.init(user, a);
 	}
 	
+	/**
+	 * Edits the name of a given album
+	 * @param oldName  the previous name of the album prior to changing
+	 * @return  the new name of the album, if the name is permitted; otherwise null
+	 */
 	public String editAlbumName(String oldName) {
 		String newName = getUserInput("Edit Name", null, "Edit name: ", oldName, false);
 		if (newName == null || duplicateNameFound(newName))
@@ -450,6 +688,11 @@ public class AlbumViewController extends SceneController {
 		return newName;
 	}
 	
+	/**
+	 * Deletes the selected album.
+	 * @param apc  controller attached to the album
+	 * @param root  root node of the pane that is stored in the list
+	 */
 	public void deleteAlbum(AlbumPaneController apc, Node root) {
 		boolean approval = showPopup(
 				"Delete Album", null, 
@@ -461,9 +704,5 @@ public class AlbumViewController extends SceneController {
 		user.removeAlbum(apc.getAlbum());
 		albumPanes.remove(root);
 		albumPaneControllers.remove(apc);
-	}
-	
-	public void setVval() {
-		scrollpane.setVvalue(1);
 	}
 }

@@ -1,5 +1,8 @@
 package controller;
-
+/**
+ * @author: Michael Nelli - mrn73
+ * @author: Christopher Naporlee - cmn134
+ */
 import java.io.IOException;
 import java.util.Optional;
 
@@ -15,10 +18,26 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
+/**
+ * Base class for all scenes.
+ */
 public abstract class SceneController {
+	
+	/**
+	 * The stage of the scene.
+	 */
 	protected Stage s;
+	
+	/**
+	 * The max length of a textbox entry.
+	 */
 	protected final int MAX_ENTRY_LENGTH = 20;
 	
+	/**
+	 * Switches the current scene of the stage.
+	 * @param scene  to switch to
+	 * @return  the controller of the loaded scene
+	 */
 	protected SceneController switchScene(Scenes scene) {
 		FXMLLoader loader = loadAsset(scene);
 		SceneController sceneController = loader.getController();
@@ -28,6 +47,11 @@ public abstract class SceneController {
 		return sceneController;
 	}
 	
+	/**
+	 * Loads all objects that implement Loadable.
+	 * @param asset  to be loaded
+	 * @return  the loader object of the asset
+	 */
 	protected FXMLLoader loadAsset(Loadable asset) {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(asset.getPath()));
 		try {
@@ -41,7 +65,6 @@ public abstract class SceneController {
 	
 	/**
 	 * Creates and displays a TextInputDialog box where the user can enter input.
-	 *
 	 * @param title  of the TextInputDialog
 	 * @param header  of the TextInputDialog
 	 * @param content  of the TextInputDialog

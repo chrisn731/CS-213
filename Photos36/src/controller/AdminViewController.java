@@ -1,5 +1,9 @@
 package controller;
 
+/**
+ * @author Christopher Naporlee - cmn134
+ * @author Michael Nelli - mrn73
+ */
 import java.util.Iterator;
 
 import app.Scenes;

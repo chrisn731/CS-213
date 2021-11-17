@@ -44,21 +44,56 @@ import model.Album;
 import model.Photo;
 import model.User;
 
+/**
+ * Main controller of the Photo View.
+ */
 public class PhotoViewController extends SceneController {
 	
+	/**
+	 * Controller of each photo pane in the Photo View.
+	 */
 	public static class PhotoPaneController {
-		@FXML
-		private ImageView imageview;
+		/**
+		 * Stores the photo's image.
+		 */
+		@FXML private ImageView imageview;
 		
-		@FXML
-		private Label labelCaption;
+		/**
+		 * Label that holds the caption of the stored photo object.
+		 */
+		@FXML private Label labelCaption;
 		
+		/**
+		 * The main controller that this object is a part of.
+		 */
 		private PhotoViewController parentController;
+		
+		/**
+		 * The actual photo model that this object represents.
+		 */
 		private Photo photo;
+		
+		/**
+		 * The root node of the asset.
+		 */
 		private Node root;
+		
+		/**
+		 * The preview image that is displayed in the list.
+		 */
 		private Image thumbnailImage;
+		
+		/**
+		 * The image that is displayed in the main display area
+		 */
 		private Image displayImage;
 		
+		/**
+		 * Initializes a photo pane.
+		 * @param pvc  the parent controller of this object
+		 * @param p  the photo that this object represents
+		 * @param root  the root of the photo pane displayed in the list
+		 */
 		private void init(PhotoViewController pvc, Photo p, Node root) {
 			parentController = pvc;
 			photo = p;
@@ -85,43 +120,88 @@ public class PhotoViewController extends SceneController {
 			
 		}
 		
+		/**
+		 * Gets the photo that this object represents.
+		 * @return
+		 */
 		private Photo getPhoto() {
 			return photo;
 		}
 		
+		/**
+		 * Calls the Photo View's controller to update its main display area to this object.
+		 */
 		private void updateParentDisplay() {
 			parentController.setMainDisplay(this);
 		}
 		
+		/**
+		 * Gets the root of the photo pane.
+		 * @return
+		 */
 		private Node getRoot() {
 			return root;
 		}
 		
+		/**
+		 * Get the image of the main display
+		 * @return
+		 */
 		private Image getImage() {
 			return displayImage;
 		}
 	}
 	
+	/**
+	 * Controller for the tag popup screen.
+	 */
 	public static class TagController { 
-		@FXML
-		private ComboBox<String> comboTagNames;
+		/**
+		 * Holds a list of all previously entered tags. Also editable to add new ones.
+		 */
+		@FXML private ComboBox<String> comboTagNames;
 		
-		@FXML
-		private TextField textboxTagValues;
+		/**
+		 * Text field where the user can enter the value of a selected tag
+		 */
+		@FXML private TextField textboxTagValues;
 		
-		@FXML
-		private Button buttonApply;
+		/**
+		 * Button to apply the entered tag-value pair.
+		 */
+		@FXML private Button buttonApply;
 		
-		@FXML
-		private Button buttonDone;
+		/**
+		 * Button to close the window.
+		 */
+		@FXML private Button buttonDone;
 		
-		@FXML
-		private Label labelApplyFeedback;
+		/**
+		 * Label that states whether a tag-value was successfully added or not.
+		 */
+		@FXML private Label labelApplyFeedback;
 		
+		/**
+		 * The stage of the scene.
+		 */
 		private Stage stage;
+		
+		/**
+		 * The user we are currently signed into.
+		 */
 		private User user;
+		
+		/**
+		 * The photo we are adding tags to.
+		 */
 		private Photo photo;
 		
+		/**
+		 * Initializes the pop-up window.
+		 * @param s  the stage of the scene.
+		 * @param u  the user we are signed into
+		 * @param p  the photo we are adding tags to
+		 */
 		private void init(Stage s, User u, Photo p) {
 			stage = s;
 			user = u;
@@ -129,6 +209,9 @@ public class PhotoViewController extends SceneController {
 			comboTagNames.getItems().addAll(u.getTagNames());
 		}
 		
+		/**
+		 * Applies the tag-value pair to the photo.
+		 */
 		@FXML
 		private void applyTags() {
 			String tag = comboTagNames.getValue();
@@ -144,6 +227,9 @@ public class PhotoViewController extends SceneController {
 			}
 		}
 		
+		/**
+		 * Closes the pop-up window.
+		 */
 		@FXML
 		private void doDone() {
 			applyTags();
@@ -154,32 +240,103 @@ public class PhotoViewController extends SceneController {
 	//@FXML private MenuItem buttonNewPhoto;
 	//@FXML private MenuItem buttonCloseAlbum;
 	//@FXML private MenuItem buttonQuit;
+	
+	/**
+	 * Menu button that copies selected photo to another album.
+	 */
 	@FXML private MenuItem buttonCopyPhoto;
+	
+	/**
+	 * Menu button that moves the selected photo into another album. 
+	 */
 	@FXML private MenuItem buttonMovePhoto;
+	
+	/**
+	 * Menu button that starts the slide-show view.
+	 */
 	@FXML private MenuItem buttonStartSlideshow;
+	
 	//@FXML private MenuItem buttonLogout;
+	
+	/**
+	 * Contains the list of photos so that the list grows.
+	 */
 	@FXML private ScrollPane scrollpane;
+	
+	/**
+	 * Contains the photo panes.
+	 */
 	@FXML private TilePane photoList;
+	
+	/**
+	 * Stores the image in the main display area.
+	 */
 	@FXML private ImageView mainDisplay;
+	
+	/**
+	 * Label that displays the caption of the photo in the main display area.
+	 */
 	@FXML private Label labelImageCaption;
+	
+	/**
+	 * Label that displays the date of the photo in the main display area.
+	 */
 	@FXML private Label labelImageDate;
+	
 	//@FXML private Button buttonDelete;
 	//@FXML private Button buttonEditCaption;
+	
+	/**
+	 * List of all tags that belong the photo shown in the main display area.
+	 */
 	@FXML private ListView<String> listviewTags;
+	
 	//@FXML private Button buttonAddTag;
 	//@FXML private Button buttonDeleteTag;
 	//@FXML private Button buttonAddPhoto;
 	//@FXML private TextField textboxSearch;
 	//@FXML private DatePicker datepicker;
+	
+	/**
+	 * Search filter that hides or shows certain search fields depending on the selected index.
+	 */
 	@FXML private ComboBox<String> comboSearchFilter;
+	
+	/**
+	 * The main display area.
+	 */
 	@FXML private AnchorPane paneMainDisplay;
 	
+	/**
+	 * The user we are logged into.
+	 */
 	private User user;
+	
+	/**
+	 * The album that we are inside of.
+	 */
 	private Album album;
+	
+	/**
+	 * The main controller of the Photo View.
+	 */
 	private PhotoPaneController selectedController;
+	
+	/**
+	 * Says whether or not the main display area should be visible or not.
+	 */
 	private boolean displayEnabled;
+	
+	/**
+	 * Contains all the controllers for all visible photo panes in the tilepane.
+	 */
 	private ArrayList<PhotoPaneController> photoPanes = new ArrayList<>();
 	
+	/**
+	 * Initializes the Photo View.
+	 * @param u  the user we are logged into.
+	 * @param a  the album we are inside of.
+	 */
 	public void init(User u, Album a) {
 		this.user = u;
 		this.album = a;
@@ -199,6 +356,9 @@ public class PhotoViewController extends SceneController {
 		changeButtonStates();
 	}
 	
+	/**
+	 * Enables or disables certain buttons depending on photo count.
+	 */
 	private void changeButtonStates() {
 		boolean shouldButtonDisarm = album.getPhotoCount() <= 0;
 		buttonStartSlideshow.setDisable(shouldButtonDisarm);
@@ -206,11 +366,17 @@ public class PhotoViewController extends SceneController {
 		buttonMovePhoto.setDisable(shouldButtonDisarm);
 	}
 	
+	/**
+	 * Hides the main display.
+	 */
 	private void disableDisplay() {
 		paneMainDisplay.setVisible(false);
 		displayEnabled = false;
 	}
 	
+	/**
+	 * Shows the main display.
+	 */
 	private void enableDisplay() {
 		if (!displayEnabled) {
 			paneMainDisplay.setVisible(true);
@@ -218,6 +384,9 @@ public class PhotoViewController extends SceneController {
 		}
 	}
 	
+	/**
+	 * Adds a photo to the album we are in.
+	 */
 	@FXML
 	private void addPhoto() {
 		File file = invokeFileChooser();
@@ -246,6 +415,10 @@ public class PhotoViewController extends SceneController {
 		changeButtonStates();
 	}
 	
+	/**
+	 * Creates a new Photo Pane Controller and adds the pane to the view.
+	 * @param p  the photo to add
+	 */
 	private void addPhotoToView(Photo p) {
 		FXMLLoader loader = loadAsset(Assets.PHOTO_PANE_PHOTO_VIEW);
 		PhotoPaneController ppc = (PhotoPaneController) loader.getController();
@@ -257,6 +430,10 @@ public class PhotoViewController extends SceneController {
 			setMainDisplay(ppc);
 	}
 	
+	/**
+	 * Sets the main display area to display all attributes of a selected photo.
+	 * @param ppc  the controller of the selected photo pane
+	 */
 	private void setMainDisplay(PhotoPaneController ppc) {
 		selectedController = ppc;
 		Photo p = ppc.getPhoto();
@@ -284,6 +461,9 @@ public class PhotoViewController extends SceneController {
 		}
 	}
 	
+	/**
+	 * Edits the caption of a selected photo.
+	 */
 	@FXML
 	private void editCaption() {
 		String newCaption = getUserInput("Edit Name", null, "Edit name: ", labelImageCaption.getText(), false);
@@ -294,6 +474,9 @@ public class PhotoViewController extends SceneController {
 		labelImageCaption.setText(newCaption);
 	}
 	
+	/**
+	 * Opens the Tag View to add new tags to the selected photo.
+	 */
 	@FXML 
 	private void addTags() {
 		Stage stage = new Stage();
@@ -308,6 +491,9 @@ public class PhotoViewController extends SceneController {
 		setMainDisplay(selectedController);
 	}
 	
+	/**
+	 * Removes a tag from the list of tags of a selected photo.
+	 */
 	@FXML
 	private void removeTag() {
 		ArrayList<String> tagVals = new ArrayList<>();
@@ -334,12 +520,19 @@ public class PhotoViewController extends SceneController {
 		return;
 	}
 	
+	/**
+	 * Closes the album we are currently in by switching back to the Album View.
+	 */
 	@FXML
 	private void closeAlbum() {
 		AlbumViewController avc = (AlbumViewController) switchScene(Scenes.ALBUM_VIEW);
 		avc.init(user);
 	}
 	
+	/**
+	 * Prompts the user to select a file with certain image extensions from their file browser.
+	 * @return  the selected file
+	 */
 	private File invokeFileChooser() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Choose picture to add");
@@ -351,6 +544,9 @@ public class PhotoViewController extends SceneController {
 		return fileChooser.showOpenDialog(s);
 	}
 	
+	/**
+	 * Creates a new window that displays the slide-show of all images of the opened album.
+	 */
 	@FXML
 	private void startSlideShow() {
 		Stage stage = new Stage();
@@ -364,6 +560,9 @@ public class PhotoViewController extends SceneController {
 		stage.show();
 	}
 	
+	/**
+	 * Prompts the user if they want to delete the selected photo;
+	 */
 	@FXML
 	private void deletePhoto() {
 		boolean approval = showPopup(
@@ -376,6 +575,9 @@ public class PhotoViewController extends SceneController {
 		processPhotoDeletion();
 	}
 	
+	/**
+	 * Deletes the selected photo and sets the main display to the next image in the list.
+	 */
 	private void processPhotoDeletion() {
 		photoList.getChildren().remove(selectedController.getRoot());
 		album.removePhoto(selectedController.getPhoto());
@@ -393,6 +595,13 @@ public class PhotoViewController extends SceneController {
 		}
 	}
 
+	/**
+	 * Asks the user which album they want to move to; the user may choose from a list of albums where the photo
+	 * will be moved to, where all options provided are those that do not already contain the selected photo.
+	 * Displays an error if the photo exists in all other albums.
+	 * @param copy  whether not the photo will be copied
+	 * @return   name of the album we want to move to.
+	 */
 	private Optional<String> promptPhotoMovement(boolean copy) {
 		ArrayList<String> userAlbumNames = new ArrayList<>();
 		for (Album a : user.getAlbums()) {
@@ -424,6 +633,9 @@ public class PhotoViewController extends SceneController {
 		return cd.showAndWait();
 	}
 	
+	/**
+	 * Moves the photo from the current album to a different one, deleting it from the current one.
+	 */
 	@FXML
 	private void movePhoto() { 
 		Optional<String> result = promptPhotoMovement(false);
@@ -433,6 +645,9 @@ public class PhotoViewController extends SceneController {
 		}
 	}
 	
+	/**
+	 * Copies the photo into a different album. It is not deleted from the current album. 
+	 */
 	@FXML
 	private void copyPhoto() {
 		Optional<String> result = promptPhotoMovement(true);
@@ -440,11 +655,17 @@ public class PhotoViewController extends SceneController {
 			user.getAlbum(result.get()).addPhoto(selectedController.getPhoto());
 	}
 	
+	/**
+	 * Closes the program.
+	 */
 	@FXML 
 	private void doQuit() {
 		Platform.exit();
 	}
 	
+	/**
+	 * Logs out of the user and switches to the Login View scene.
+	 */
 	@FXML
 	private void doLogout() {
 		LoginViewController lvc = (LoginViewController) switchScene(Scenes.LOGIN);
