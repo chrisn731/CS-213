@@ -75,7 +75,7 @@ public class SlideShowViewController {
 		album = a;
 		photoImageMap = new HashMap<>(album.getPhotos().size());
 		for (Photo p : album.getPhotos()) {
-			photoImageMap.put(p, new Image("file:" + p.getPath(), true));
+			photoImageMap.put(p, new Image("file:" + p.getPath(), 750, 750, true, true, true));
 		}
 		albumNameLabel.setText(album.getName());
 		updateDisplay();

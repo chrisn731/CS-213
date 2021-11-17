@@ -23,7 +23,7 @@ Authors:
 	</Text>
 	<Pane fx:id="paneAlbum" prefHeight="175.0" prefWidth="175.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 	   <children>
-            <HBox fx:id="imageViewContainer" alignment="CENTER" prefHeight="175.0" prefWidth="175.0" style="-fx-background-color: black; -fx-border-color: black;">
+            <HBox fx:id="imageViewContainer" alignment="CENTER" prefHeight="175.0" prefWidth="175.0" style="-fx-background-color: transparent; -fx-border-color: black;">
                <children>
       		  <ImageView fx:id="imageview" fitHeight="172.0" fitWidth="172.0" pickOnBounds="true" preserveRatio="true" />
                </children>

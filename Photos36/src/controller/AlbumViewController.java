@@ -1,11 +1,13 @@
 package controller;
 
+import java.io.File;
 /**
  * @author Michael Nelli - mrn73
  * @author Christopher Naporlee - cmn134
  */
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import app.Assets;
@@ -15,11 +17,9 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -122,12 +122,9 @@ public class AlbumViewController extends SceneController {
 			}
 			paneAlbum.hoverProperty().addListener((observable, oldValue, newValue) -> {
 				if (newValue) {
-					paneAlbum.setStyle("-fx-cursor: hand;"
-							         + "-fx-border-color: black;");
+					paneAlbum.setStyle("-fx-cursor: hand;" + "-fx-border-color: black;");
 					imageViewContainer.setOpacity(HOVER_OPACITY);
 				} else {
-					imageViewContainer.setStyle("-fx-background-color: black;"
-							                  + "-fx-border-color: black;");
 					imageViewContainer.setOpacity(1);
 				}
 				for (Node n : paneAlbum.getChildren()) {
@@ -153,7 +150,9 @@ public class AlbumViewController extends SceneController {
 		 * Sets the imageview to be the first image of the stored album object.
 		 */
 		private void setCoverImage() {
+			imageViewContainer.setStyle("-fx-border-color: black;");
 			if (album.getPhotoCount() > 0) {
+				imageViewContainer.setStyle("-fx-background-color: black;");
 				imageview.setImage(
 					new Image(
 						"file:" + album.getPhotos().get(0).getPath(), 
@@ -162,7 +161,15 @@ public class AlbumViewController extends SceneController {
 					)
 				);
 			} else {
-				paneAlbum.setStyle("-fx-background-color: rgba(125,125,125,1)");
+				Image i = new Image(
+						getClass().getResource("/assets/empty_album_placeholder.png").toString(), 
+						true
+				);
+				imageview.setImage(i);
+				imageview.setScaleX(.75);
+				imageview.setScaleY(.75);
+				imageview.setOpacity(.15);
+				imageViewContainer.setStyle("-fx-background-color: #c7c7c7;");
 			}
 		}
 		
@@ -460,13 +467,14 @@ public class AlbumViewController extends SceneController {
 	 */
 	@FXML
 	private void createAlbumFromSearch() {
-		 AlbumPaneController apc = createAlbum();
-		 if (apc.getAlbum() == null)
-			 return;
-		 for (PhotoPaneController ppc : photoPaneControllers) {
-			 apc.getAlbum().addPhoto(ppc.getPhoto());
-		 }
-		 apc.setCoverImage();
+		ArrayList<Photo> photos = new ArrayList<>();
+		for (PhotoPaneController ppc : photoPaneControllers) {
+			photos.add(ppc.getPhoto());
+		}
+		createAlbumInteral(
+			getUserInput("New Album", null, "Enter name: ", null, true),
+			photos.iterator()
+		);
 	}
 	
 	/**
@@ -487,19 +495,30 @@ public class AlbumViewController extends SceneController {
 	}
 
 	/**
-	 * Creates a new album.
+	 * Creates a basic, empty album.
+	 */
+	@FXML
+	private void createAlbum() {
+		createAlbumInteral(
+			getUserInput("New Album", null, "Enter name: ", null, true),
+			Collections.emptyIterator()
+		);
+	}
+	
+	/**
+	 * Handles the internal process of creating a new album.
 	 * Displays an error message if no name is given in the pop-up dialog or a duplicate name is found.
 	 * @return the created AlbumPaneController
 	 */
-	@FXML
-	private AlbumPaneController createAlbum() {
-		String name = getUserInput("New Album", null, "Enter name: ", null, true);
+	private AlbumPaneController createAlbumInteral(String name, Iterator<Photo> photosToAdd) {
 		if (name == null || duplicateNameFound(name))
 			return null;
 		FXMLLoader loader = loadAsset(Assets.ALBUM_PANE);
 		AlbumPaneController albumPaneController = loader.getController();
 		Album album = new Album(name);
 		user.addAlbum(album);
+		while (photosToAdd.hasNext())
+			album.addPhoto(photosToAdd.next());
 		albumPaneController.init(album, this);
 		albumPanes.add(loader.getRoot());
 		albumPaneControllers.add(albumPaneController);
@@ -630,6 +649,9 @@ public class AlbumViewController extends SceneController {
 		buttonNewAlbumFromSearch.setDisable(photoPanes.isEmpty());
 	}
 	
+	/**
+	 * Clears the date fields
+	 */
 	@FXML
 	private void clearDates() {
 		datePickerStartDate.setValue(null);
