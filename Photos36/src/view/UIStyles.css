@@ -81,3 +81,12 @@ Authors:
 	-fx-background-insets: 2.0, 0.0, 0.0;
 	-fx-background-radius: 2.0em;
 }
+
+#shadowCaster {
+	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,1), 8, 0, 0, 0);
+}
+
+#paneAlbum:hover {
+	-fx-cursor: hand;
+	-fx-border-color: black;
+}

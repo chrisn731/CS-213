@@ -1,6 +1,5 @@
 package controller;
 
-import java.io.File;
 /**
  * @author Michael Nelli - mrn73
  * @author Christopher Naporlee - cmn134
@@ -20,6 +19,7 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -66,9 +66,6 @@ public class AlbumViewController extends SceneController {
 		 */
 		@FXML private Text labelDates;
 		
-		//@FXML private Button buttonEdit;
-		//@FXML private Button buttonDelete;
-		
 		/**
 		 * Pane that holds the album's image and text fields.
 		 */
@@ -102,7 +99,7 @@ public class AlbumViewController extends SceneController {
 		/**
 		 * The opacity of the imageview when the cursor is hovering over the album pane.
 		 */
-		private final double HOVER_OPACITY = .1;
+		private final double HOVER_OPACITY = .15;
 		
 		/**
 		 * Initializes an album pane.
@@ -120,9 +117,9 @@ public class AlbumViewController extends SceneController {
 				if (!(n instanceof HBox))
 					n.setVisible(false);
 			}
+			
 			paneAlbum.hoverProperty().addListener((observable, oldValue, newValue) -> {
 				if (newValue) {
-					paneAlbum.setStyle("-fx-cursor: hand;" + "-fx-border-color: black;");
 					imageViewContainer.setOpacity(HOVER_OPACITY);
 				} else {
 					imageViewContainer.setOpacity(1);
@@ -131,7 +128,8 @@ public class AlbumViewController extends SceneController {
 					if (!(n instanceof HBox))
 						n.setVisible(newValue);
 				}
-				labelPhotoCount.setText(Integer.toString(album.getPhotoCount()) + " Photos");
+				String suffix = album.getPhotoCount() == 1 ? " Photo" : " Photos";
+				labelPhotoCount.setText(Integer.toString(album.getPhotoCount()) + suffix);
 			});
 			
 			paneAlbum.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
@@ -150,16 +148,19 @@ public class AlbumViewController extends SceneController {
 		 * Sets the imageview to be the first image of the stored album object.
 		 */
 		private void setCoverImage() {
-			imageViewContainer.setStyle("-fx-border-color: black;");
+			//imageViewContainer.setStyle("-fx-border-color: black;");
 			if (album.getPhotoCount() > 0) {
-				imageViewContainer.setStyle("-fx-background-color: black;");
-				imageview.setImage(
-					new Image(
-						"file:" + album.getPhotos().get(0).getPath(), 
-						500, 500, 
-						true, true, true
-					)
-				);
+				Image tmp = new Image("file:" + album.getPhotos().get(0).getPath());
+				double width = tmp.getWidth();
+				double height = tmp.getHeight();
+				Rectangle2D viewport;
+				if (width > height) 
+					viewport = new Rectangle2D((width - height) / 2, 0, height, height);
+				else
+					viewport = new Rectangle2D(0, (height-width) / 2, width, width);
+				Image i = new Image("file:" + album.getPhotos().get(0).getPath(), true);
+				imageview.setImage(i);
+				imageview.setViewport(viewport);
 			} else {
 				Image i = new Image(
 						getClass().getResource("/assets/empty_album_placeholder.png").toString(), 
@@ -266,8 +267,6 @@ public class AlbumViewController extends SceneController {
 		}
 	}
 	
-	//@FXML private MenuItem buttonNewAlbum;
-	
 	/**
 	 * Menu button that creates a new album from search results.
 	 */
@@ -277,9 +276,6 @@ public class AlbumViewController extends SceneController {
 	 * Menu button that closes the program.
 	 */
 	@FXML private MenuItem buttonQuit;
-	
-	//@FXML private MenuItem buttonDelete;
-	//@FXML private MenuItem buttonLogout;
 	
 	/**
 	 * The list of all albums that are within a user. Albums are replaced by photos.
@@ -383,7 +379,7 @@ public class AlbumViewController extends SceneController {
 			albumPaneControllers.add(albumPaneController);
 		}
 		
-		s.setTitle("Viewing " + u.getUserName() + "'s Albums");
+		s.setTitle(u.getUserName() + "'s Albums");
 		comboFilter.requestFocus();
 		buttonNewAlbumFromSearch.setDisable(true);
 	}
@@ -393,10 +389,8 @@ public class AlbumViewController extends SceneController {
 	 */
 	private void setListeners() {
 		textboxSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue.trim().equals("")) {
+			if (newValue.trim().equals(""))
 				setListStateToPhotos(false);
-				//buttonNewAlbumFromSearch.setDisable(true);
-			}
 		});
 		
 		datePickerStartDate.valueProperty().addListener((observable, oldValue, newValue) -> {

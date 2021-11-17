@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- 
-Authors:
-	Michael Nelli - mrn73
-	Christopher Naporlee - cmn134
--->
-
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -16,7 +10,6 @@ Authors:
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -55,15 +48,17 @@ Authors:
             </Menu>
          </menus>
       </MenuBar>
-      <HBox layoutX="20.0" layoutY="70.0" prefHeight="512.0" prefWidth="784.0" style="-fx-border-color: gray;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="70.0">
+      <HBox layoutX="20.0" layoutY="48.0" prefHeight="532.0" prefWidth="787.0" style="-fx-border-color: gray;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="46.0">
          <children>
       		  <!-- TILEPANE OF PHOTOS -->
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="512.0" prefWidth="390.0">
                <children>
-                  <ScrollPane fx:id="scrollpane" prefHeight="508.0" prefWidth="390.0" style="-fx-focus-color: transparent; -fx-background-insets: 0, 0, 0, 0;" AnchorPane.bottomAnchor="0.8000000000000114" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <ScrollPane fx:id="scrollpane" prefHeight="531.0" prefWidth="388.0" style="-fx-focus-color: transparent; -fx-background-insets: 0, 0, 0, 0;" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <content>
-                        <TilePane fx:id="photoList" hgap="10.0" prefHeight="506.0" prefTileHeight="175.0" prefTileWidth="150.0" prefWidth="374.0" vgap="10.0">
-                        </TilePane>
+                        <TilePane fx:id="photoList" hgap="25.0" prefHeight="530.0" prefTileHeight="125.0" prefTileWidth="100.0" prefWidth="384.0" vgap="10.0">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding></TilePane>
                      </content>
                   </ScrollPane>
                </children>
@@ -106,8 +101,7 @@ Authors:
             </AnchorPane>
          </children>
       </HBox>
-      <TextField fx:id="textboxSearch" layoutX="20.0" layoutY="36.0" prefHeight="26.0" prefWidth="663.0" promptText="Search photo" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="36.0" />
       <DatePicker fx:id="datepicker" layoutX="20.0" layoutY="36.0" prefHeight="26.0" prefWidth="663.0" visible="false" />
-      <ComboBox fx:id="comboSearchFilter" layoutX="691.0" layoutY="36.0" prefHeight="26.0" prefWidth="116.0" promptText="Search filter" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="36.0" />
+      <Label fx:id="labelPhotoCount" layoutX="20.0" layoutY="577.0" prefHeight="18.0" prefWidth="119.0" />
    </children>
 </AnchorPane>

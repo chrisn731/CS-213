@@ -5,7 +5,6 @@ package controller;
  * @author Christopher Naporlee
  */
 import java.io.File;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
@@ -24,7 +23,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -237,10 +235,6 @@ public class PhotoViewController extends SceneController {
 		}
 	}
 	
-	//@FXML private MenuItem buttonNewPhoto;
-	//@FXML private MenuItem buttonCloseAlbum;
-	//@FXML private MenuItem buttonQuit;
-	
 	/**
 	 * Menu button that copies selected photo to another album.
 	 */
@@ -283,19 +277,10 @@ public class PhotoViewController extends SceneController {
 	 */
 	@FXML private Label labelImageDate;
 	
-	//@FXML private Button buttonDelete;
-	//@FXML private Button buttonEditCaption;
-	
 	/**
 	 * List of all tags that belong the photo shown in the main display area.
 	 */
 	@FXML private ListView<String> listviewTags;
-	
-	//@FXML private Button buttonAddTag;
-	//@FXML private Button buttonDeleteTag;
-	//@FXML private Button buttonAddPhoto;
-	//@FXML private TextField textboxSearch;
-	//@FXML private DatePicker datepicker;
 	
 	/**
 	 * Search filter that hides or shows certain search fields depending on the selected index.
@@ -306,6 +291,12 @@ public class PhotoViewController extends SceneController {
 	 * The main display area.
 	 */
 	@FXML private AnchorPane paneMainDisplay;
+	
+	/**
+	 * Displays the number of photos within the album.
+	 */
+	@FXML
+	private Label labelPhotoCount;
 	
 	/**
 	 * The user we are logged into.
@@ -332,6 +323,9 @@ public class PhotoViewController extends SceneController {
 	 */
 	private ArrayList<PhotoPaneController> photoPanes = new ArrayList<>();
 	
+	@FXML
+	private Button buttonDeleteTag;
+	
 	/**
 	 * Initializes the Photo View.
 	 * @param u  the user we are logged into.
@@ -341,19 +335,21 @@ public class PhotoViewController extends SceneController {
 		this.user = u;
 		this.album = a;
 		disableDisplay();
-		comboSearchFilter.setItems(
-			FXCollections.observableArrayList(
-					"Sort by: None",
-					"Sort by: Date", 
-					"Sort by: Tags"
-			)
-		);
-		s.setTitle("Viewing " + u.getUserName() + "'s photos from album '" + album.getName() + "'");
+		s.setTitle("Viewing album " + "'" + album.getName() + "'");
+		updatePhotoCountLabel();
 		for (Photo p : a.getPhotos()) {
 			addPhotoToView(p);
 		}
 		scrollpane.setFitToWidth(true);
 		changeButtonStates();
+		
+		buttonDeleteTag.setDisable(true);
+		listviewTags.getSelectionModel().selectedIndexProperty().addListener((obs, oldv, newv) -> {
+			if (newv.intValue() == -1) 
+				buttonDeleteTag.setDisable(true);
+			else 
+				buttonDeleteTag.setDisable(false);
+		});;
 	}
 	
 	/**
@@ -428,6 +424,7 @@ public class PhotoViewController extends SceneController {
 		photoPanes.add(ppc);
 		if (selectedController == null)
 			setMainDisplay(ppc);
+		updatePhotoCountLabel();
 	}
 	
 	/**
@@ -459,6 +456,14 @@ public class PhotoViewController extends SceneController {
 			}
 			tags.add(listItem);
 		}
+	}
+	
+	/**
+	 * Updates the label that displays the number of photos in the album.
+	 */
+	private void updatePhotoCountLabel() {
+		String suffix = photoPanes.size() == 1 ? " photo" : " photos";
+		labelPhotoCount.setText(photoPanes.size() + suffix);
 	}
 	
 	/**
@@ -573,6 +578,7 @@ public class PhotoViewController extends SceneController {
 		if (!approval)
 			return;
 		processPhotoDeletion();
+		updatePhotoCountLabel();
 	}
 	
 	/**
