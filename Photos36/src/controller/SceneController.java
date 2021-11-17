@@ -69,7 +69,7 @@ public abstract class SceneController {
 	 * @param header  of the TextInputDialog
 	 * @param content  of the TextInputDialog
 	 * @param prompText  of the TextField
-	 * @param disableOK
+	 * @param disableOK Determines whether we should disable the OK button
 	 * @return String within TextField. If empty, returns null.
 	 */
 	protected String getUserInput(String title, String header, String content, String prompText, boolean disableOK) {

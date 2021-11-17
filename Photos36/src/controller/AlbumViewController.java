@@ -250,7 +250,7 @@ public class AlbumViewController extends SceneController {
 		
 		/**
 		 * Initializes a photo pane
-		 * @param p
+		 * @param p Photo that will be displayed in the pane
 		 */
 		private void init(Photo p) {
 			photo = p;
@@ -502,6 +502,8 @@ public class AlbumViewController extends SceneController {
 	/**
 	 * Handles the internal process of creating a new album.
 	 * Displays an error message if no name is given in the pop-up dialog or a duplicate name is found.
+	 * @param name Name of the Album
+	 * @param photosToAdd Photos to add into the album
 	 * @return the created AlbumPaneController
 	 */
 	private AlbumPaneController createAlbumInteral(String name, Iterator<Photo> photosToAdd) {

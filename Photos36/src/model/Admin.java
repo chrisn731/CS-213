@@ -82,7 +82,7 @@ public class Admin {
 	
 	/**
 	 * Writes all data to disk. Called upon application entry.
-	 * @throws IOException
+	 * @throws IOException IO error from writing to disk
 	 */
 	public static void syncToDisk() throws IOException {
 		System.out.println(
@@ -126,8 +126,7 @@ public class Admin {
 	
 	/**
 	 * Loads in photos data from disk. Called upon application exit and cleanup.
-	 * @throws IOException
-	 * @throws ClassNotFoundException
+	 * @throws ClassNotFoundException Thrown if failed to store data into users list
 	 */
 	@SuppressWarnings("unchecked")
 	public static void loadFromDisk() throws ClassNotFoundException {

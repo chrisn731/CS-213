@@ -48,7 +48,7 @@ public class LoginViewController extends SceneController {
 	/**
 	 * This init function is special as it acts as our entry point into the application.
 	 * This function is to ONLY be used by {@link app.Photos}
-	 * @param s
+	 * @param s The stage passed in from the main start() function
 	 */
 	public void init(Stage s) {
 		this.s = s;
@@ -80,17 +80,16 @@ public class LoginViewController extends SceneController {
 			return;
 		}
 		
-		System.out.println("Login successful!");
-		if (input.equals("admin")) {
+		if (u.getUserName().equals("admin")) {
 			loginAsAdmin();
 		} else {
-			loginNormal(input);
+			loginNormal(u);
 		}
 
 	}
 	
 	/**
-	 * Logs into the application as admin, thus launching the {@link view.AdminView}
+	 * Logs into the application as admin, thus launching the Admin View
 	 */
 	private void loginAsAdmin() {
 		AdminViewController avc = (AdminViewController) switchScene(Scenes.ADMIN_VIEW);
@@ -98,12 +97,12 @@ public class LoginViewController extends SceneController {
 	}
 
 	/**
-	 * Logs into the application as a regular user, thus launching the {@link view.AlbumView}
-	 * @param input
+	 * Logs into the application as a regular user, thus launching the AlbumView
+	 * @param u The user to log in as
 	 */
-	private void loginNormal(String input) {
+	private void loginNormal(User u) {
 		AlbumViewController avc = (AlbumViewController) switchScene(Scenes.ALBUM_VIEW);
-		avc.init(Admin.getUserByName(input));
+		avc.init(u);
 	}
 
 	/**

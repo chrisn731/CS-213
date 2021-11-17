@@ -120,7 +120,7 @@ public class PhotoViewController extends SceneController {
 		
 		/**
 		 * Gets the photo that this object represents.
-		 * @return
+		 * @return The photo
 		 */
 		private Photo getPhoto() {
 			return photo;
@@ -135,7 +135,7 @@ public class PhotoViewController extends SceneController {
 		
 		/**
 		 * Gets the root of the photo pane.
-		 * @return
+		 * @return The root Node
 		 */
 		private Node getRoot() {
 			return root;
@@ -143,7 +143,7 @@ public class PhotoViewController extends SceneController {
 		
 		/**
 		 * Get the image of the main display
-		 * @return
+		 * @return The image to display
 		 */
 		private Image getImage() {
 			return displayImage;
@@ -323,8 +323,10 @@ public class PhotoViewController extends SceneController {
 	 */
 	private ArrayList<PhotoPaneController> photoPanes = new ArrayList<>();
 	
-	@FXML
-	private Button buttonDeleteTag;
+	/**
+	 * The delete button to remove tags
+	 */
+	@FXML private Button buttonDeleteTag;
 	
 	/**
 	 * Initializes the Photo View.
