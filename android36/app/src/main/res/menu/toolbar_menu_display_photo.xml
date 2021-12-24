@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/editName"
+        android:icon="@drawable/ic_action_edit"
+        android:title="@string/Edit"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/deletePhoto"
+        android:icon="@drawable/ic_action_delete"
+        android:title="@string/Delete"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/showMoveOptions"
+        android:icon="@drawable/ic_action_more"
+        android:title="show_more"
+        app:showAsAction="always" />
+
+</menu>

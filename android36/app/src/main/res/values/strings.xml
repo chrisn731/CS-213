@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">android</string>
+    <string name="Add">add_album</string>
+    <string name="Search">search_album</string>
+    <string name="Play">play_slideshow</string>
+    <string name="Edit">edit_name</string>
+    <string name="Delete">delete</string>
+    <string name="edit_name">Edit name</string>
+    <string name="delete_album">Delete</string>
+    <string name="move">Move</string>
+    <string name="move_to">Move To</string>
+    <string name="copy_to">Copy To</string>
+    <string name="undo">Undo</string>
+</resources>
